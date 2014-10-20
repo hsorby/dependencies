@@ -1,6 +1,8 @@
-PROJECT (OpenCMISS_Dependencies)
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+cmake_policy(SET CMP0048 NEW)
 include(ExternalProject)
+
+PROJECT (OpenCMISS_Dependencies)
 
 SET(OCM_UTILS_DIR ${OpenCMISS_Dependencies_SOURCE_DIR}/../utils)
 
@@ -41,57 +43,49 @@ SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OPENCMISS_DEPENDENCIES_LIBRARIES})
 FIND_PACKAGE(BLAS CONFIG QUIET)
 FIND_PACKAGE(LAPACK CONFIG QUIET)
 if(OCM_FORCE_BLAS OR OCM_FORCE_LAPACK OR NOT (LAPACK_FOUND AND BLAS_FOUND))
-    ADD_EXTERNAL_PROJECT(LAPACK lapack "")
-    SET(PLAPACK_DEPS LAPACK)
-    SET(SCALAPACK_DEPS LAPACK)
+    ADD_EXTERNAL_PROJECT(LAPACK lapack)
 endif()
 
 # PLAPACK
 FIND_PACKAGE(PLAPACK CONFIG QUIET)
 if(OCM_FORCE_PLAPACK OR NOT PLAPACK_FOUND)
-    ADD_EXTERNAL_PROJECT(PLAPACK plapack ${PLAPACK_DEPS})
+    ADD_EXTERNAL_PROJECT(PLAPACK plapack)
 endif()
 
 # ScaLAPACK
 FIND_PACKAGE(SCALAPACK CONFIG QUIET)
 if(OCM_FORCE_SCALAPACK OR NOT SCALAPACK_FOUND)
-    ADD_EXTERNAL_PROJECT(SCALAPACK scalapack ${SCALAPACK_DEPS})
+    ADD_EXTERNAL_PROJECT(SCALAPACK scalapack)
 endif()
 
 # parMETIS (+METIS)
 if (OCM_USE_PARMETIS)
     FIND_PACKAGE(PARMETIS CONFIG QUIET)
     if(OCM_FORCE_PARMETIS OR NOT PARMETIS_FOUND)
-        ADD_EXTERNAL_PROJECT(PARMETIS parmetis "")
-        SET(MUMPS_DEPS LAPACK)
+        ADD_EXTERNAL_PROJECT(PARMETIS parmetis)
     endif()
 endif()
 
 # MUMPS
-FIND_PACKAGE(MUMPS QUIET)
+FIND_PACKAGE(MUMPS CONFIG QUIET)
 if(OCM_FORCE_MUMPS OR NOT MUMPS_FOUND)
-    ADD_EXTERNAL_PROJECT(MUMPS mumps ${MUMPS_DEPS})
+    ADD_EXTERNAL_PROJECT(MUMPS mumps)
 endif()
 
 # CHOLMOD
-#if (NOT CHOLMOD_CUSTOM)
-#    FIND_PACKAGE(CHOLMOD QUIET)
-#endif()
-#if(OCM_FORCE_CHOLMOD OR NOT CHOLMOD_FOUND)
-#    add_subdirectory(suitesparse/SuiteSparse_config)
-#    add_subdirectory(suitesparse/AMD)
-#    add_subdirectory(suitesparse/COLAMD)
-#    add_subdirectory(suitesparse/CAMD)
-#    add_subdirectory(suitesparse/CCOLAMD)
-#    add_subdirectory(suitesparse/CHOLMOD)
-#endif()
-
+FIND_PACKAGE(CHOLMOD CONFIG QUIET)
+FIND_PACKAGE(UMFPACK CONFIG QUIET)
+if(OCM_FORCE_CHOLMOD OR NOT CHOLMOD_FOUND OR OCM_FORCE_UMFPACK OR NOT UMFPACK_FOUND)
+    ADD_EXTERNAL_PROJECT(SUITESPARSE suitesparse)
+endif()
 
 # Notes:
 # plapack: have only MACHINE_TYPE=500 and MANUFACTURE=50 (linux)
 # mumps - not setup for libseq / sequential version
 # mumps - only have double precision arithmetics
 # mumps - no PORD is compiled (will have parmetis/scotch available)
+# metis: have fixed IDXTYPEWIDTH 32 
+# suitesparse: have extra metis 4.0.3 included there as it doesn
 
 # TODO
 # cholmod - use CUDA stuff

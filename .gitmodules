@@ -1,18 +1,18 @@
 [submodule "plapack"]
 	path = plapack
-	url = /people/dwir109/localgithub/PLAPACKR32/
+	url = git@github.com:rondiplomatico/plapack.git
 [submodule "mumps"]
 	path = mumps
-	url = /people/dwir109/localgithub/MUMPS/
+	url = git@github.com:rondiplomatico/mumps.git
 [submodule "parmetis"]
 	path = parmetis
-	url = /people/dwir109/localgithub/parMETIS/
+	url = git@github.com:rondiplomatico/parmetis.git
 [submodule "scalapack"]
 	path = scalapack
-	url = /people/dwir109/localgithub/ScaLAPACK
+	url = git@github.com:rondiplomatico/scalapack.git
 [submodule "suitesparse"]
 	path = suitesparse
-	url = /people/dwir109/localgithub/SuiteSparse/
+	url = git@github.com:rondiplomatico/suitesparse.git
 [submodule "lapack"]
 	path = lapack
 	url = git@github.com:rondiplomatico/lapack.git
