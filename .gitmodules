@@ -1,0 +1,18 @@
+[submodule "plapack"]
+	path = plapack
+	url = /people/dwir109/localgithub/PLAPACKR32/
+[submodule "mumps"]
+	path = mumps
+	url = /people/dwir109/localgithub/MUMPS/
+[submodule "parmetis"]
+	path = parmetis
+	url = /people/dwir109/localgithub/parMETIS/
+[submodule "scalapack"]
+	path = scalapack
+	url = /people/dwir109/localgithub/ScaLAPACK
+[submodule "suitesparse"]
+	path = suitesparse
+	url = /people/dwir109/localgithub/SuiteSparse/
+[submodule "lapack"]
+	path = lapack
+	url = git@github.com:rondiplomatico/lapack.git
