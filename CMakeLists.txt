@@ -47,10 +47,10 @@ if(OCM_FORCE_BLAS OR OCM_FORCE_LAPACK OR NOT (LAPACK_FOUND AND BLAS_FOUND))
 endif()
 
 # PLAPACK
-#FIND_PACKAGE(PLAPACK CONFIG QUIET)
-#if(OCM_FORCE_PLAPACK OR NOT PLAPACK_FOUND)
-#    ADD_EXTERNAL_PROJECT(PLAPACK plapack)
-#endif()
+FIND_PACKAGE(PLAPACK CONFIG QUIET)
+if(OCM_FORCE_PLAPACK OR NOT PLAPACK_FOUND)
+    ADD_EXTERNAL_PROJECT(PLAPACK plapack)
+endif()
 
 # ScaLAPACK
 FIND_PACKAGE(SCALAPACK CONFIG QUIET)
@@ -62,7 +62,7 @@ endif()
 if (OCM_USE_PARMETIS)
     FIND_PACKAGE(PARMETIS CONFIG QUIET)
     if(OCM_FORCE_PARMETIS OR NOT PARMETIS_FOUND)
-#        ADD_EXTERNAL_PROJECT(PARMETIS parmetis)
+        ADD_EXTERNAL_PROJECT(PARMETIS parmetis)
     endif()
 endif()
 
@@ -87,6 +87,8 @@ endif()
 
 # Notes:
 # plapack: have only MACHINE_TYPE=500 and MANUFACTURE=50 (linux)
+# plapack: some tests are not compiling
+# parmetis/metis: test programs not available (but for gklib, and they are also rudimental), linking executables instead to have a 50% "its working" test
 # mumps - not setup for libseq / sequential version
 # mumps - only have double precision arithmetics
 # mumps - no PORD is compiled (will have parmetis/scotch available)
