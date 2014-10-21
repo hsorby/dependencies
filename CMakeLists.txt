@@ -47,10 +47,10 @@ if(OCM_FORCE_BLAS OR OCM_FORCE_LAPACK OR NOT (LAPACK_FOUND AND BLAS_FOUND))
 endif()
 
 # PLAPACK
-FIND_PACKAGE(PLAPACK CONFIG QUIET)
-if(OCM_FORCE_PLAPACK OR NOT PLAPACK_FOUND)
-    ADD_EXTERNAL_PROJECT(PLAPACK plapack)
-endif()
+#FIND_PACKAGE(PLAPACK CONFIG QUIET)
+#if(OCM_FORCE_PLAPACK OR NOT PLAPACK_FOUND)
+#    ADD_EXTERNAL_PROJECT(PLAPACK plapack)
+#endif()
 
 # ScaLAPACK
 FIND_PACKAGE(SCALAPACK CONFIG QUIET)
@@ -62,21 +62,27 @@ endif()
 if (OCM_USE_PARMETIS)
     FIND_PACKAGE(PARMETIS CONFIG QUIET)
     if(OCM_FORCE_PARMETIS OR NOT PARMETIS_FOUND)
-        ADD_EXTERNAL_PROJECT(PARMETIS parmetis)
+#        ADD_EXTERNAL_PROJECT(PARMETIS parmetis)
     endif()
 endif()
 
 # MUMPS
 FIND_PACKAGE(MUMPS CONFIG QUIET)
 if(OCM_FORCE_MUMPS OR NOT MUMPS_FOUND)
-    ADD_EXTERNAL_PROJECT(MUMPS mumps)
+#    ADD_EXTERNAL_PROJECT(MUMPS mumps)
 endif()
 
-# CHOLMOD
+# CHOLMOD / UMFPACK
 FIND_PACKAGE(CHOLMOD CONFIG QUIET)
 FIND_PACKAGE(UMFPACK CONFIG QUIET)
 if(OCM_FORCE_CHOLMOD OR NOT CHOLMOD_FOUND OR OCM_FORCE_UMFPACK OR NOT UMFPACK_FOUND)
-    ADD_EXTERNAL_PROJECT(SUITESPARSE suitesparse)
+#    ADD_EXTERNAL_PROJECT(SUITESPARSE suitesparse)
+endif()
+
+# Hypre 2.9.0b
+FIND_PACKAGE(HYPRE CONFIG QUIET)
+if(OCM_FORCE_HYPRE OR NOT HYPRE_FOUND)
+#    ADD_EXTERNAL_PROJECT(HYPRE hypre)
 endif()
 
 # Notes:
@@ -85,7 +91,7 @@ endif()
 # mumps - only have double precision arithmetics
 # mumps - no PORD is compiled (will have parmetis/scotch available)
 # metis: have fixed IDXTYPEWIDTH 32 
-# suitesparse: have extra metis 4.0.3 included there as it doesn
+# suitesparse: have extra metis 4.0.3 included there as it doesnt link with the newest version
 
 # TODO
 # cholmod - use CUDA stuff

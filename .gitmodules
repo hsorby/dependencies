@@ -16,3 +16,6 @@
 [submodule "lapack"]
 	path = lapack
 	url = git@github.com:rondiplomatico/lapack.git
+[submodule "hypre"]
+	path = hypre
+	url = /people/dwir109/opencmissextras/cm/external/packages/Hypre/hypre-2.9.0b/src
