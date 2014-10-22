@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
-cmake_policy(SET CMP0048 NEW)
+cmake_policy(SET CMP0048 NEW) # Allows VERSION in project definitions
 include(ExternalProject)
 
 PROJECT (OpenCMISS_Dependencies)
@@ -58,6 +58,15 @@ if(OCM_FORCE_SCALAPACK OR NOT SCALAPACK_FOUND)
     ADD_EXTERNAL_PROJECT(SCALAPACK scalapack)
 endif()
 
+# METIS 4.0.3
+# Note: Parmetis also comes with a metis version, but suitesparse and mumps still only work with the 4.0.x versions
+if (OCM_USE_METIS)
+    FIND_PACKAGE(METIS 4.0 CONFIG QUIET)
+    if(OCM_FORCE_METIS OR NOT METIS_FOUND)
+        ADD_EXTERNAL_PROJECT(METIS metis)
+    endif()
+endif()
+
 # parMETIS (+METIS)
 if (OCM_USE_PARMETIS)
     FIND_PACKAGE(PARMETIS CONFIG QUIET)
@@ -69,7 +78,7 @@ endif()
 # MUMPS
 FIND_PACKAGE(MUMPS CONFIG QUIET)
 if(OCM_FORCE_MUMPS OR NOT MUMPS_FOUND)
-#    ADD_EXTERNAL_PROJECT(MUMPS mumps)
+    ADD_EXTERNAL_PROJECT(MUMPS mumps OCM_USE_PARMETIS OCM_USE_METIS)
 endif()
 
 # CHOLMOD / UMFPACK
@@ -92,6 +101,7 @@ endif()
 # mumps - not setup for libseq / sequential version
 # mumps - only have double precision arithmetics
 # mumps - no PORD is compiled (will have parmetis/scotch available)
+# mumps - hardcoded Add_ compiler flag for c/fortran interfacing.. dunno if that is the best idea
 # metis: have fixed IDXTYPEWIDTH 32 
 # suitesparse: have extra metis 4.0.3 included there as it doesnt link with the newest version
 

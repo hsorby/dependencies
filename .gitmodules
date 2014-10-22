@@ -19,3 +19,6 @@
 [submodule "hypre"]
 	path = hypre
 	url = /people/dwir109/opencmissextras/cm/external/packages/Hypre/hypre-2.9.0b/src
+[submodule "metis"]
+	path = metis
+	url = git@github.com:rondiplomatico/metis.git
