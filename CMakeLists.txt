@@ -85,7 +85,7 @@ endif()
 FIND_PACKAGE(CHOLMOD CONFIG QUIET)
 FIND_PACKAGE(UMFPACK CONFIG QUIET)
 if(OCM_FORCE_CHOLMOD OR NOT CHOLMOD_FOUND OR OCM_FORCE_UMFPACK OR NOT UMFPACK_FOUND)
-#    ADD_EXTERNAL_PROJECT(SUITESPARSE suitesparse)
+    ADD_EXTERNAL_PROJECT(SUITESPARSE suitesparse)
 endif()
 
 # Hypre 2.9.0b
@@ -103,7 +103,9 @@ endif()
 # mumps - no PORD is compiled (will have parmetis/scotch available)
 # mumps - hardcoded Add_ compiler flag for c/fortran interfacing.. dunno if that is the best idea
 # metis: have fixed IDXTYPEWIDTH 32 
-# suitesparse: have extra metis 4.0.3 included there as it doesnt link with the newest version
+# cholmod: could go with CUDA BLAS version (indicated by makefile)
+# umfpack: building only "int" version right now (Suitesparse_long impl for AMD,CAMD etc but not umfpack)
+
 
 # TODO
 # cholmod - use CUDA stuff
