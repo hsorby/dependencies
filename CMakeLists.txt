@@ -94,7 +94,14 @@ if(OCM_FORCE_HYPRE OR NOT HYPRE_FOUND)
     ADD_EXTERNAL_PROJECT(HYPRE hypre)
 endif()
 
+# SuperLU 4.3
+FIND_PACKAGE(SUPERLU CONFIG QUIET)
+if(OCM_FORCE_SUPERLU OR NOT SUPERLU_FOUND)
+    ADD_EXTERNAL_PROJECT(SUPERLU superlu)
+endif()
+
 # Notes:
+# lapack: not sure if LAPACKE is build/required 
 # plapack: have only MACHINE_TYPE=500 and MANUFACTURE=50 (linux)
 # plapack: some tests are not compiling
 # parmetis/metis: test programs not available (but for gklib, and they are also rudimental), linking executables instead to have a 50% "its working" test

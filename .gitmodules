@@ -18,7 +18,13 @@
 	url = git@github.com:rondiplomatico/lapack.git
 [submodule "hypre"]
 	path = hypre
-	url = /people/dwir109/opencmissextras/cm/external/packages/Hypre/hypre-2.9.0b/src
+	url = git@github.com:rondiplomatico/hypre.git
 [submodule "metis"]
 	path = metis
 	url = git@github.com:rondiplomatico/metis.git
+[submodule "superlu"]
+	path = superlu
+	url = git@github.com:rondiplomatico/superlu.git
+[submodule "superlu_dist"]
+	path = superlu_dist
+	url = git@github.com:rondiplomatico/superlu_dist.git
