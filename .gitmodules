@@ -25,6 +25,3 @@
 [submodule "superlu"]
 	path = superlu
 	url = git@github.com:rondiplomatico/superlu.git
-[submodule "superlu_dist"]
-	path = superlu_dist
-	url = git@github.com:rondiplomatico/superlu_dist.git
