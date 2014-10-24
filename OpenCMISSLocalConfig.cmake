@@ -1,9 +1,5 @@
-# General customisation
-
-# User type flag
-# OFF: Only get the source files, no GIT information attached
-# ON: Also checkout the GIT repositories
-SET(OCM_DEVELOPER_MODE ON)
+# Initial setup instructions
+#SET(OCM_DEVELOPER_MODE ON)
 
 # Force to use all OpenCMISS dependencies - long compilation, but will work
 SET(FORCE_OCM_ALLDEPS NO)

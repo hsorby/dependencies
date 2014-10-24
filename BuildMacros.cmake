@@ -104,7 +104,7 @@ MACRO( ADD_EXTERNAL_PROJECT
 	
 	# Add the dependency information for other downstream packages that might use this one
 	ADD_DOWNSTREAM_DEPS(${PROJECT_NAME})
-    message(STATUS "Downstream-dependants of ${PROJECT_NAME}: ${${PROJECT_NAME}_DEPS}")
+    #message(STATUS "Dependencies of ${PROJECT_NAME}: ${${PROJECT_NAME}_DEPS}")
     
 ENDMACRO()
 
