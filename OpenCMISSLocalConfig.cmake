@@ -1,0 +1,74 @@
+# General customisation
+
+# User type flag
+# OFF: Only get the source files, no GIT information attached
+# ON: Also checkout the GIT repositories
+SET(OCM_DEVELOPER_MODE ON)
+
+# Force to use all OpenCMISS dependencies - long compilation, but will work
+SET(FORCE_OCM_ALLDEPS NO)
+
+# Debug customisation
+SET(DEBUG_ALL NO)
+# Single packages
+SET(DEBUG_BLAS NO)
+SET(DEBUG_LAPACK NO)
+SET(DEBUG_PLAPACK NO)
+SET(DEBUG_SCALAPACK NO)
+SET(DEBUG_PARMETIS NO)
+SET(DEBUG_CHOLMOD NO)
+
+# ==============================
+# customisation of dependencies
+# ==============================
+# BLAS 
+#SET(BLAS_LIBRARIES )
+#SET(BLAS_INCLUDES )
+SET(OCM_FORCE_BLAS NO)
+
+# LAPACK
+#SET(LAPACK_LIBRARIES )
+#SET(LAPACK_INCLUDES )
+SET(OCM_FORCE_LAPACK NO)
+
+# PLAPACK
+#SET(PLAPACK_LIBRARIES )
+#SET(PLAPACK_INCLUDES )
+SET(OCM_FORCE_PLAPACK NO)
+
+# SCALAPACK
+#SET(SCALAPACK_LIBRARIES )
+#SET(SCALAPACK_INCLUDES )
+SET(OCM_FORCE_SCALAPACK NO)
+
+# METIS
+#SET(METIS_LIBRARIES )
+#SET(METIS_INCLUDES )
+SET(OCM_USE_METIS YES)
+SET(OCM_FORCE_METIS NO)
+
+# PARMETIS
+#SET(PARMETIS_LIBRARIES )
+#SET(PARMETIS_INCLUDES )
+# debug disable; the mumps and scalapack only work with metis 4xx and this parmetis cant use the old metis.
+# so will either have to use older parmetis or check with chris how the new version is made to build
+SET(OCM_USE_PARMETIS YES)
+SET(OCM_FORCE_PARMETIS NO)
+
+# MUMPS
+#SET(MUMPS_LIBRARIES )
+#SET(MUMPS_INCLUDES )
+SET(OCM_FORCE_MUMPS NO)
+
+# CHOLMOD
+#SET(CHOLMOD_LIBRARIES )
+#SET(CHOLMOD_INCLUDES )
+SET(OCM_FORCE_CHOLMOD NO)
+
+# SuperLU / Dist
+#SET(SUPERLU_LIBRARIES )
+#SET(SUPERLU_INCLUDES )
+SET(OCM_USE_SUPERLU YES)
+SET(OCM_FORCE_SUPERLU NO)
+SET(OCM_USE_SUPERLU_DIST YES)
+SET(OCM_FORCE_SUPERLU_DIST NO)

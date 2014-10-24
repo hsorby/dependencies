@@ -4,7 +4,7 @@ include(ExternalProject)
 
 PROJECT (OpenCMISS_Dependencies)
 
-SET(OCM_UTILS_DIR ${OpenCMISS_Dependencies_SOURCE_DIR}/../utils)
+SET(OCM_UTILS_DIR ${OpenCMISS_Dependencies_SOURCE_DIR})
 
 # This later goes to the top level cmake script (or whereever that will be)
 include(${OCM_UTILS_DIR}/OpenCMISS.cmake)
