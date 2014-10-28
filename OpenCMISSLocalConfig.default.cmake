@@ -1,13 +1,15 @@
 # ==============================
 # Initial setup instructions
 # ==============================
-#SET(OCM_DEVELOPER_MODE ON)
+SET(OCM_DEVELOPER_MODE ON)
 
 # ==============================
 # Build configuration
 # ==============================
 # Use architecture information paths
 SET(OCM_USE_ARCHITECTURE_PATH NO)
+# Also build tests?
+SET(BUILD_TESTING ON)
 
 # ==============================
 # Customisation of dependencies
@@ -30,3 +32,9 @@ SET(FORCE_OCM_ALLDEPS NO)
 #SET(OCM_USE_PLAPACK NO)
 #SET(OCM_USE_METIS NO)
 #SET(OCM_USE_PARMETIS NO)
+
+# ==============================
+# Single module configuration
+# ==============================
+SET(MUMPS_WITH_METIS YES)
+SET(MUMPS_WITH_PARMETIS NO)

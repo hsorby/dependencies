@@ -1,22 +1,29 @@
 include(BuildMacros)
-#message(STATUS "Looking for cmake modules in: ${CMAKE_MODULE_PATH}")
 
-if (NOT CMAKE_BUILD_TYPE)
+if (NOT CMAKE_BUILD_TYPE AND NOT WIN32)
     SET(CMAKE_BUILD_TYPE RELEASE)
+    message(WARNING "No CMAKE_BUILD_TYPE has been defined. Using RELEASE.")
 endif()
 
 # The library path for all locally build dependencies
-STRING(TOLOWER ${CMAKE_BUILD_TYPE} buildtype)
-SET(OPENCMISS_DEPENDENCIES_LIBRARIES ${CMAKE_CURRENT_SOURCE_DIR}/lib/${buildtype})
-SET(OPENCMISS_DEPENDENCIES_EXECUTABLES ${CMAKE_CURRENT_SOURCE_DIR}/bin/${buildtype})
+if (NOT WIN32)
+    STRING(TOLOWER ${CMAKE_BUILD_TYPE} buildtype)
+    SET(UNIXBUILDTYPEEXTRA "/${buildtype}")
+else()
+    # The multiconfig generators for VS ignore the CMAKE_BUILD_TYPE and hence would cause trouble if
+    # any paths would've been deduced from that.
+    SET(UNIXBUILDTYPEEXTRA "")
+endif()
+SET(OPENCMISS_DEPENDENCIES_LIBRARIES ${CMAKE_CURRENT_SOURCE_DIR}/lib${UNIXBUILDTYPEEXTRA})
+
 # Here will the config-files from self-built external projects reside
-SET(OPENCMISS_DEPENDENCIES_CONFIGS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake/${buildtype})
+SET(OPENCMISS_DEPENDENCIES_CONFIGS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake${UNIXBUILDTYPEEXTRA})
 
 # ================================
 # Dependencies
 # ================================
 # List of all dependency packages
-SET(OCM_DEPS BLAS LAPACK PLAPACK SCALAPACK PARMETIS CHOLMOD SUITESPARSE MUMPS SUPERLU SUPERLU_DIST)
+SET(OCM_DEPS BLAS LAPACK PLAPACK SCALAPACK METIS PARMETIS CHOLMOD SUITESPARSE MUMPS SUPERLU SUPERLU_DIST)
 # Forward/downstream dependencies (for cmake external build ordering)
 SET(LAPACK_FWD_DEPS SCALAPACK PLAPACK SUITESPARSE MUMPS SUPERLU SUPERLU_DIST METIS PARMETIS HYPRE)
 SET(METIS_FWD_DEPS MUMPS SUITESPARSE)
@@ -41,12 +48,6 @@ include(OpenCMISSLocalConfig)
 # Postprocessing
 # ================================
 FOREACH(OCM_DEP ${OCM_DEPS})
-    # Not currently used
-    #if (${OCM_DEP}_LIBRARIES OR ${OCM_DEP}_LIBRARY)
-    #    SET(${OCM_DEP}_CUSTOM YES)
-    #else()
-    #    SET(${OCM_DEP}_CUSTOM NO)
-    #endif()
     if(OCM_FORCE_${OCM_DEP} OR FORCE_OCM_ALLDEPS)
         SET(OCM_FORCE_${OCM_DEP} YES)
     else()

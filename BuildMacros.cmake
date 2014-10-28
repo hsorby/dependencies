@@ -5,13 +5,17 @@ MACRO( ADD_EXTERNAL_PROJECT
     # additional args
 	SET( PROJECT_CMAKE_ARGS "")
 	LIST(APPEND PROJECT_CMAKE_ARGS
-	    -DOPENCMISS_DEPENDENCIES_CONFIGS_DIR=${OPENCMISS_DEPENDENCIES_CONFIGS_DIR}
-	    -DOPENCMISS_DEPENDENCIES_LIBRARIES=${OPENCMISS_DEPENDENCIES_LIBRARIES}
+	    -DOPENCMISS_DEPENDENCIES_CONFIGS_DIR:PATH=${OPENCMISS_DEPENDENCIES_CONFIGS_DIR}
+	    -DOPENCMISS_DEPENDENCIES_LIBRARIES:PATH=${OPENCMISS_DEPENDENCIES_LIBRARIES}
+	    -DCMAKE_BUILD_TYPE:PATH=${CMAKE_BUILD_TYPE}
+	    -DBUILD_TESTING=${BUILD_TESTING}
 	)
 	# Forward any other variables
     foreach(extra_var ${ARGN})
-        LIST(APPEND PROJECT_CMAKE_ARGS -D${extra_var}=${${extra_var}})
-        message(STATUS "Appending extra definition -D${extra_var}=${${extra_var}}")
+        #LIST(APPEND PROJECT_CMAKE_ARGS -D${extra_var}=${${extra_var}})
+        #message(STATUS "Appending extra definition -D${extra_var}=${${extra_var}}")
+        LIST(APPEND PROJECT_CMAKE_ARGS -D${extra_var})
+        message(STATUS "${PROJECT_NAME}: Using extra definition -D${extra_var}")
     endforeach()
 
 	#SET( PATCH_COMMAND_STRING )
