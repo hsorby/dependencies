@@ -28,3 +28,6 @@
 [submodule "superlu_dist"]
 	path = superlu_dist
 	url = git@github.com:rondiplomatico/superlu_dist.git
+[submodule "sundials"]
+	path = sundials
+	url = git@github.com:rondiplomatico/sundials.git

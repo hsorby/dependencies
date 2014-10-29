@@ -89,6 +89,14 @@ if (OCM_USE_SUPERLU_DIST)
     endif()
 endif()
 
+# SuperLU-DIST 4.0
+if (OCM_USE_SUNDIALS)
+    FIND_PACKAGE(SUNDIALS CONFIG QUIET)
+    if(OCM_FORCE_SUNDIALS OR NOT SUNDIALS_FOUND)
+        ADD_EXTERNAL_PROJECT(SUNDIALS sundials USE_LAPACK=${SUNDIALS_WITH_LAPACK})
+    endif()
+endif()
+
 # Notes:
 # lapack: not sure if LAPACKE is build/required 
 # plapack: have only MACHINE_TYPE=500 and MANUFACTURE=50 (linux)

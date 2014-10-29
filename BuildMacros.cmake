@@ -60,11 +60,11 @@ MACRO( ADD_EXTERNAL_PROJECT
     
     if (OCM_DEVELOPER_MODE)
         # Retrieve current submodule revision
-        execute_process(COMMAND git submodule update -i ${MODULE_NAME}
-            WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
+        #execute_process(COMMAND git submodule update -i ${MODULE_NAME}
+        #    WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
         # Check out opencmiss branch
-        execute_process(COMMAND git checkout opencmiss
-            WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR}/${PROJECT_FOLDER})
+        #execute_process(COMMAND git checkout opencmiss
+        #    WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR}/${PROJECT_FOLDER})
     	ExternalProject_Add( ${PROJECT_NAME}
     		DEPENDS ${${PROJECT_NAME}_DEPS}
     		PREFIX ${PROJECT_FOLDER}
