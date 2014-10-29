@@ -31,3 +31,6 @@
 [submodule "sundials"]
 	path = sundials
 	url = git@github.com:rondiplomatico/sundials.git
+[submodule "scotch"]
+	path = scotch
+	url = git@github.com:rondiplomatico/scotch.git
