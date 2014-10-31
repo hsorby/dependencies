@@ -1,36 +1,36 @@
 [submodule "plapack"]
 	path = plapack
-	url = ./plapack.git
+	url = ../plapack.git
 [submodule "mumps"]
 	path = mumps
-	url = ./mumps.git
+	url = ../mumps.git
 [submodule "parmetis"]
 	path = parmetis
-	url = ./parmetis.git
+	url = ../parmetis.git
 [submodule "scalapack"]
 	path = scalapack
-	url = ./scalapack.git
+	url = ../scalapack.git
 [submodule "suitesparse"]
 	path = suitesparse
-	url = ./suitesparse.git
+	url = ../suitesparse.git
 [submodule "lapack"]
 	path = lapack
-	url = ./lapack.git
+	url = ../lapack.git
 [submodule "hypre"]
 	path = hypre
-	url = ./hypre.git
+	url = ../hypre.git
 [submodule "metis"]
 	path = metis
-	url = ./metis.git
+	url = ../metis.git
 [submodule "superlu"]
 	path = superlu
-	url = ./superlu.git
+	url = ../superlu.git
 [submodule "superlu_dist"]
 	path = superlu_dist
-	url = ./superlu_dist.git
+	url = ../superlu_dist.git
 [submodule "sundials"]
 	path = sundials
-	url = ./sundials.git
+	url = ../sundials.git
 [submodule "scotch"]
 	path = scotch
-	url = ./scotch.git
+	url = ../scotch.git
