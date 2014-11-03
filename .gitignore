@@ -2,4 +2,6 @@ build/
 cmake/
 lib/
 bin/
+install/
 OpenCMISSLocalConfig.cmake
+pastix2

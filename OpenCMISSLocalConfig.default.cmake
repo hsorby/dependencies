@@ -8,8 +8,17 @@ SET(OCM_DEVELOPER_MODE ON)
 # ==============================
 # Use architecture information paths
 SET(OCM_USE_ARCHITECTURE_PATH NO)
+
+# Precision to build (if applicable)
+# Valid choices are s,d,c,z and any combinations.
+# s: Single / float precision
+# d: Double precision
+# c: Complex / float precision
+# z: Complex / double precision
+SET(BUILD_PRECISION d)
+
 # Also build tests?
-SET(BUILD_TESTING ON)
+SET(BUILD_TESTS ON)
 
 # ==============================
 # Customisation of dependencies
@@ -29,9 +38,19 @@ SET(FORCE_OCM_ALLDEPS NO)
 # Choose here which optional dependencies/packages will be built by cmake.
 # The default is to build all
 
-#SET(OCM_USE_PLAPACK NO)
-#SET(OCM_USE_METIS NO)
-#SET(OCM_USE_PARMETIS NO)
+#SET(OCM_USE_LAPACK YES)
+#SET(OCM_USE_SCALAPACK YES)
+#SET(OCM_USE_MUMPS YES)
+#SET(OCM_USE_METIS YES)
+#SET(OCM_USE_PLAPACK YES)
+#SET(OCM_USE_PTSCOTCH YES)
+#SET(OCM_USE_SUITESPARSE YES)
+#SET(OCM_USE_SUNDIALS YES)
+#SET(OCM_USE_SUPERLU YES)
+#SET(OCM_USE_SUPERLU_DIST YES)
+#SET(OCM_USE_PARMETIS YES)
+SET(OCM_USE_PASTIX NO)
+SET(OCM_USE_HYPRE NO)
 
 # ==============================
 # Single module configuration
@@ -43,3 +62,9 @@ SET(SUNDIALS_WITH_LAPACK YES)
 
 SET(SCOTCH_USE_PTHREAD YES)
 SET(SCOTCH_USE_GZ YES)
+
+SET(SUITESPARSE_WITH_CHOLMOD YES)
+SET(SUITESPARSE_WITH_UMFPACK YES)
+
+SET(SUPERLU_DIST_WITH_PARMETIS NO)
+SET(SUPERLU_DIST_WITH_METIS YES)
