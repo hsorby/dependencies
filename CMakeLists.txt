@@ -131,6 +131,14 @@ if (OCM_USE_PASTIX)
     endif()
 endif()
 
+# PETSc 2.3.5.1
+if (OCM_USE_PETSC)
+    FIND_PACKAGE(PETSC CONFIG QUIET)
+    if(OCM_FORCE_PETSC OR NOT PETSC_FOUND)
+        ADD_EXTERNAL_PROJECT(PETSC petsc)
+    endif()
+endif()
+
 # Notes:
 # lapack: not sure if LAPACKE is build/required 
 # plapack: have only MACHINE_TYPE=500 and MANUFACTURE=50 (linux)

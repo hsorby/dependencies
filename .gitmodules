@@ -36,4 +36,7 @@
 	url = ../scotch.git
 [submodule "pastix"]
 	path = pastix
-	url = git@github.com:rondiplomatico/pastix.git
+	url = ../pastix.git
+[submodule "petsc"]
+	path = petsc
+	url = ../petsc.git
