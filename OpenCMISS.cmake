@@ -23,7 +23,7 @@ SET(OCM_DEPS_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install${UNIXBUILDTYPEEX
 SET(OCM_DEPS BLAS LAPACK PLAPACK SCALAPACK METIS
     PARMETIS SUITESPARSE MUMPS SUPERLU SUPERLU_DIST
     SUNDIALS SCOTCH PTSCOTCH PASTIX HYPRE PETSC)
-# Forward/downstream dependencies (for cmake external build ordering)
+# Forward/downstream dependencies (for cmake build ordering and dependency checking)
 SET(LAPACK_FWD_DEPS SCALAPACK SUITESPARSE MUMPS
     SUPERLU SUPERLU_DIST METIS PARMETIS
     HYPRE SUNDIALS PASTIX PLAPACK PETSC)
@@ -32,6 +32,8 @@ SET(PARMETIS_FWD_DEPS MUMPS SUITESPARSE SUPERLU_DIST)
 SET(SCALAPACK_FWD_DEPS MUMPS)
 SET(PTSCOTCH_FWD_DEPS PASTIX)
 SET(SCOTCH_FWD_DEPS PASTIX)
+
+
 
 # Default: Build all dependencies
 FOREACH(OCM_DEP ${OCM_DEPS})
@@ -52,8 +54,20 @@ include(OpenCMISSLocalConfig)
 FOREACH(OCM_DEP ${OCM_DEPS})
     if(OCM_FORCE_${OCM_DEP} OR FORCE_OCM_ALLDEPS)
         SET(OCM_FORCE_${OCM_DEP} YES)
+        # If forced we'll also use it right?
+        SET(OCM_USE_${OCM_DEP} YES)
     else()
         SET(OCM_FORCE_${OCM_DEP} NO)
     endif()
+    # Make a dependency check and enable other packages if required
+    if (${OCM_DEP}_FWD_DEPS)
+        foreach(FWD_DEP ${${OCM_DEP}_FWD_DEPS})
+            if(OCM_USE_${FWD_DEP} AND NOT OCM_USE_${OCM_DEP})
+                message(STATUS "Package ${FWD_DEP} requires ${OCM_DEP}, setting OCM_USE_${OCM_DEP}=ON")
+                set(OCM_USE_${OCM_DEP} ON)
+            endif() 
+        endforeach()
+    endif()
+    
     message(STATUS "Package ${OCM_DEP}: Build: ${OCM_USE_${OCM_DEP}}, Custom ${${OCM_DEP}_CUSTOM}, OCM forced: ${OCM_FORCE_${OCM_DEP}}")
 ENDFOREACH()
