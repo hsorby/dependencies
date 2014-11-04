@@ -58,9 +58,17 @@ SET(FORCE_OCM_ALLDEPS NO)
 #SET(OCM_USE_HYPRE NO)
 #SET(OCM_USE_PETSC NO)
 
-# ==============================
+# ==========================================================================================
 # Single module configuration
-# ==============================
+#
+# These flags only apply if the corresponding package is build
+# by the OpenCMISS Dependencies system. The packages themselves will then search for the
+# appropriate consumed packages. No checks are performed on whether the consumed packages
+# will also be build by us or not, as they might be provided externally.
+#
+# To be safe: E.g. if you wanted to use MUMPS with METIS, also set OCM_USE_METIS=YES so that
+# the build system ensures that METIS will be available.
+# ==========================================================================================
 SET(MUMPS_WITH_METIS YES)
 SET(MUMPS_WITH_PARMETIS NO)
 
