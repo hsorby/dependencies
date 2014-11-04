@@ -1,42 +1,42 @@
 [submodule "plapack"]
 	path = plapack
-	url = ../plapack.git
+	url = git@github.com:rondiplomatico/plapack.git
 [submodule "mumps"]
 	path = mumps
-	url = ../mumps.git
+	url = git@github.com:rondiplomatico/mumps.git
 [submodule "parmetis"]
 	path = parmetis
-	url = ../parmetis.git
+	url = git@github.com:rondiplomatico/parmetis.git
 [submodule "scalapack"]
 	path = scalapack
-	url = ../scalapack.git
+	url = git@github.com:rondiplomatico/scalapack.git
 [submodule "suitesparse"]
 	path = suitesparse
-	url = ../suitesparse.git
+	url = git@github.com:rondiplomatico/suitesparse.git
 [submodule "lapack"]
 	path = lapack
-	url = ../lapack.git
+	url = git@github.com:rondiplomatico/lapack.git
 [submodule "hypre"]
 	path = hypre
-	url = ../hypre.git
+	url = git@github.com:rondiplomatico/hypre.git
 [submodule "metis"]
 	path = metis
-	url = ../metis.git
+	url = git@github.com:rondiplomatico/metis.git
 [submodule "superlu"]
 	path = superlu
-	url = ../superlu.git
+	url = git@github.com:rondiplomatico/superlu.git
 [submodule "superlu_dist"]
 	path = superlu_dist
-	url = ../superlu_dist.git
+	url = git@github.com:rondiplomatico/superlu_dist.git
 [submodule "sundials"]
 	path = sundials
-	url = ../sundials.git
+	url = git@github.com:rondiplomatico/sundials.git
 [submodule "scotch"]
 	path = scotch
-	url = ../scotch.git
+	url = git@github.com:rondiplomatico/scotch.git
 [submodule "pastix"]
 	path = pastix
-	url = ../pastix.git
+	url = git@github.com:rondiplomatico/pastix.git
 [submodule "petsc"]
 	path = petsc
-	url = ../petsc.git
+	url = git@github.com:rondiplomatico/petsc.git
