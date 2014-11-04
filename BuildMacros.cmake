@@ -57,16 +57,23 @@ MACRO( ADD_EXTERNAL_PROJECT
         OUTPUT_VARIABLE RES
         WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
     string(SUBSTRING ${RES} 1 40 REV_ID)
-    #message(STATUS "GIT submodule ${MODULE_NAME} revision: ${REV_ID}")
+    
     
     if (OCM_DEVELOPER_MODE)
-        # Retrieve current submodule revision
-        #execute_process(COMMAND git submodule update -i ${MODULE_NAME}
-        #    WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
-        # Check out opencmiss branch
-        #execute_process(COMMAND git checkout opencmiss
-        #    WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR}/${PROJECT_FOLDER})
-    	ExternalProject_Add( ${PROJECT_NAME}
+        # Retrieve current submodule revision if the submodule has not been
+        # initialized, indicated by an "-" as first character of the submodules status string
+        # See http://git-scm.com/docs/git-submodule # status
+        string(SUBSTRING ${RES} 0 1 SUBMOD_STATUS)
+        if (SUBMOD_STATUS STREQUAL -)
+            message(STATUS "OpenCMISS Developper mode: Submodule ${MODULE_NAME} not initialized yet. Doing now..")
+            execute_process(COMMAND git submodule update --init --recursive ${MODULE_NAME}
+                WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
+            # Check out opencmiss branch
+            execute_process(COMMAND git checkout opencmiss
+                WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR}/${PROJECT_FOLDER})
+        endif()
+        
+    	ExternalProject_Add(${PROJECT_NAME}
     		DEPENDS ${${PROJECT_NAME}_DEPS}
     		PREFIX ${PROJECT_FOLDER}
     		#--Download step--------------
@@ -75,7 +82,7 @@ MACRO( ADD_EXTERNAL_PROJECT
     		#GIT_REPOSITORY https://github.com/rondiplomatico/${MODULE_NAME}/tree/${REV_ID}
     		# SSH version
     		#GIT_REPOSITORY git@github.com:rondiplomatico/${MODULE_NAME}/tree/${REV_ID}
-    		#GIT_REVISION ${PROJECT_REVISION}
+    		#GIT_REVISION ${PROJECT_REVISION}    		
 
     		#--Configure step-------------
     		SOURCE_DIR ../${PROJECT_FOLDER}
@@ -87,7 +94,8 @@ MACRO( ADD_EXTERNAL_PROJECT
     		INSTALL_COMMAND ${LOCAL_PLATFORM_INSTALL_COMMAND}
     		)
     else()
-            ExternalProject_Add( ${PROJECT_NAME}
+            #message(STATUS "Downloading ${MODULE_NAME} revision ${REV_ID}...")
+            ExternalProject_Add(${PROJECT_NAME}
     		DEPENDS ${${PROJECT_NAME}_DEPS}
     		PREFIX ${PROJECT_FOLDER}
     		#--Download step--------------

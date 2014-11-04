@@ -5,7 +5,7 @@ include(ExternalProject)
 # This later goes to the top level cmake script (or whereever that will be)
 LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
-PROJECT (OpenCMISS_Dependencies)
+PROJECT(OpenCMISS_Dependencies)
 include(OpenCMISS)
 
 # LAPACK (includes BLAS)
