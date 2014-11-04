@@ -119,6 +119,18 @@ elseif(OCM_USE_SCOTCH)
     endif()
 endif()
 
+# Pastix 5.2.2.16
+if (OCM_USE_PASTIX)
+    FIND_PACKAGE(PASTIX CONFIG QUIET)
+    if(OCM_FORCE_PASTIX OR NOT PASTIX_FOUND)
+        ADD_EXTERNAL_PROJECT(PASTIX pastix
+            INT_TYPE=${INT_TYPE}
+            USE_THREADS=${PASTIX_USE_THREADS}
+            USE_METIS=${PASTIX_USE_METIS}
+            USE_PTSCOTCH=${PASTIX_USE_PTSCOTCH})
+    endif()
+endif()
+
 # Notes:
 # lapack: not sure if LAPACKE is build/required 
 # plapack: have only MACHINE_TYPE=500 and MANUFACTURE=50 (linux)
