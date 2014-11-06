@@ -1,11 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
-#cmake_policy(SET CMP0048 NEW) # Allows VERSION in project definitions
 include(ExternalProject)
 
 # This later goes to the top level cmake script (or whereever that will be)
 LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
-PROJECT(OpenCMISS_Dependencies)
+PROJECT(OpenCMISS_Dependencies VERSION 1.0 LANGUAGES C CXX Fortran)
 include(OpenCMISS)
 
 # LAPACK (includes BLAS)
@@ -64,9 +63,7 @@ if (OCM_USE_SUITESPARSE)
     FIND_PACKAGE(UMFPACK CONFIG QUIET)
     if(OCM_FORCE_CHOLMOD OR NOT CHOLMOD_FOUND 
         OR OCM_FORCE_UMFPACK OR NOT UMFPACK_FOUND)
-        ADD_EXTERNAL_PROJECT(SUITESPARSE suitesparse
-            WITH_CHOLMOD=${SUITESPARSE_WITH_CHOLMOD}
-            WITH_UMFPACK=${SUITESPARSE_WITH_UMFPACK})
+        ADD_EXTERNAL_PROJECT(SUITESPARSE suitesparse)
     endif()
 endif()
 

@@ -25,6 +25,14 @@ SET(INT_TYPE int32)
 SET(BUILD_TESTS ON)
 
 # ==============================
+# MPI
+# ==============================
+# This finds a default MPI_<lang>_COMPILER for every language.
+# The chosen compilers will be passed to any dependency package
+# for consistent builds.
+find_package(MPI REQUIRED)
+
+# ==============================
 # Customisation of dependencies
 # ==============================
 # Planned: For inclusion of external, custom libraries you'd go like  
@@ -76,9 +84,6 @@ SET(SUNDIALS_WITH_LAPACK YES)
 
 SET(SCOTCH_USE_PTHREAD YES)
 SET(SCOTCH_USE_GZ YES)
-
-SET(SUITESPARSE_WITH_CHOLMOD YES)
-SET(SUITESPARSE_WITH_UMFPACK YES)
 
 SET(SUPERLU_DIST_WITH_PARMETIS NO)
 SET(SUPERLU_DIST_WITH_METIS YES)

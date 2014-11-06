@@ -11,6 +11,19 @@ MACRO( ADD_EXTERNAL_PROJECT
 	    -DBUILD_TESTS=${BUILD_TESTS}
 	    -DCMAKE_PREFIX_PATH=${OCM_DEPS_INSTALL_PREFIX}/lib
 	)
+	# check if MPI compilers should be forwarded/set
+	# so that the local FindMPI uses that
+	foreach(DEP OCM_DEPS_WITHMPI)
+	    if(DEP STREQUAL PROJECT_NAME)
+	        foreach(lang C CXX Fortran)
+	            if(MPI_${lang}_COMPILER)
+	                LIST(APPEND PROJECT_CMAKE_ARGS
+	                    -DMPI_${lang}_COMPILER=${MPI_${lang}_COMPILER}
+	                )
+	            endif()
+	        endforeach()
+	    endif()
+	endforeach()
 	# Forward any other variables
     foreach(extra_var ${ARGN})
         #LIST(APPEND PROJECT_CMAKE_ARGS -D${extra_var}=${${extra_var}})
@@ -94,6 +107,10 @@ MACRO( ADD_EXTERNAL_PROJECT
     		INSTALL_COMMAND ${LOCAL_PLATFORM_INSTALL_COMMAND}
     		)
     else()
+            # TODO
+            # write test script to see if https downloads work
+            # if not, use git archive --remote to use git's builtin ssl
+            # if not, tell people to get cmake with ssl or a newer git version
             #message(STATUS "Downloading ${MODULE_NAME} revision ${REV_ID}...")
             ExternalProject_Add(${PROJECT_NAME}
     		DEPENDS ${${PROJECT_NAME}_DEPS}
