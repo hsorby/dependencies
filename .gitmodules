@@ -40,3 +40,6 @@
 [submodule "petsc"]
 	path = petsc
 	url = git@github.com:rondiplomatico/petsc.git
+[submodule "parmetis3"]
+	path = parmetis3
+	url = git@github.com:rondiplomatico/parmetis3.2.git
