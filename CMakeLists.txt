@@ -32,25 +32,15 @@ endif()
 
 # METIS 4.0.3
 # Note: Parmetis also comes with a metis version, but suitesparse and mumps still only work with the 4.0.x versions
-# No longer needed as we have a parmetis version that contains METIS 4
-if (OCM_USE_METIS)
-    FIND_PACKAGE(METIS 4.0 CONFIG QUIET)
-    if(OCM_FORCE_METIS OR NOT METIS_FOUND)
-        ADD_EXTERNAL_PROJECT(METIS metis)
+if (OCM_USE_METIS4)
+    FIND_PACKAGE(METIS4 CONFIG QUIET)
+    if(OCM_FORCE_METIS4 OR NOT METIS4_FOUND)
+        ADD_EXTERNAL_PROJECT(METIS4 metis)
     endif()
 endif()
 
-# parMETIS 3.2 (+METIS 4.x)
-# suitesparse and mumps still only work with the 4.0.x versions, and having two versions in the same linking process
-# does not work well :-)
-if (OCM_USE_PARMETIS3)
-    FIND_PACKAGE(PARMETIS 3 CONFIG QUIET)
-    if(OCM_FORCE_PARMETIS OR NOT PARMETIS_FOUND)
-        ADD_EXTERNAL_PROJECT(PARMETIS parmetis3)
-    endif()
 # parMETIS 4 (+METIS 5)
-# too new for current dependencies. so we dont currently use it :-(
-elseif(OCM_USE_PARMETIS)
+if(OCM_USE_PARMETIS)
     FIND_PACKAGE(PARMETIS CONFIG QUIET)
     if(OCM_FORCE_PARMETIS OR NOT PARMETIS_FOUND)
         ADD_EXTERNAL_PROJECT(PARMETIS parmetis)
