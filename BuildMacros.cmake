@@ -51,17 +51,6 @@ MACRO( ADD_EXTERNAL_PROJECT
 			LIST(INSERT LOCAL_PLATFORM_INSTALL_COMMAND 1 ${SOLUTION_NAME}.sln )
 		ENDIF( DEPENDENCIES_DEVENV_EXECUTABLE )			
 	ENDIF( GENERATOR_MATCH_VISUAL_STUDIO )
-	
-#	IF( ${CMAKE_BUILD_TYPE} STREQUAL "Debug" )
-#		SET( PROJECT_DEBUG_SUFFIX d )
-#	ENDIF()
-	#IF( NOT EXISTS "${PROJECT_FOLDER}/src/${PROJECT_NAME}-${PROJECT_VERSION}/CMakeLists.txt" )
-#		SET( EXTRACT_STEP "EXTRACT_ARCHIVE;${PROJECT_FOLDER}/download/${PROJECT_NAME}-${PROJECT_VERSION}/${PROJECT_NAME}-${PROJECT_VERSION}.${PROJECT_ARCHIVE_SUFFIX}" )
-#		SET( PATCH_STEP "PATCH_COMMAND;${DEPENDENCIES_PATCH_EXECUTABLE};-p1;-i;${PROJECT_FOLDER}/download/${PROJECT_NAME}-${PROJECT_VERSION}/${PROJECT_NAME}-${PROJECT_VERSION}.patch" )
-#	ELSE()
-#		SET( EXTRACT_STEP )
-#		SET( PATCH_STEP )
-#	ENDIF()
     
     # We use the project folder name as module name
     SET(MODULE_NAME ${PROJECT_FOLDER})
@@ -70,15 +59,14 @@ MACRO( ADD_EXTERNAL_PROJECT
         OUTPUT_VARIABLE RES
         WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
     string(SUBSTRING ${RES} 1 40 REV_ID)
-    
-    
+
     if (OCM_DEVELOPER_MODE)
         # Retrieve current submodule revision if the submodule has not been
         # initialized, indicated by an "-" as first character of the submodules status string
         # See http://git-scm.com/docs/git-submodule # status
         string(SUBSTRING ${RES} 0 1 SUBMOD_STATUS)
         if (SUBMOD_STATUS STREQUAL -)
-            message(STATUS "OpenCMISS Developper mode: Submodule ${MODULE_NAME} not initialized yet. Doing now..")
+            message(STATUS "OpenCMISS Developer mode: Submodule ${MODULE_NAME} not initialized yet. Doing now..")
             execute_process(COMMAND git submodule update --init --recursive ${MODULE_NAME}
                 WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
             # Check out opencmiss branch
