@@ -55,7 +55,7 @@ MACRO( ADD_EXTERNAL_PROJECT
     # We use the project folder name as module name
     SET(MODULE_NAME ${PROJECT_FOLDER})
     # get current revision ID
-    execute_process(COMMAND git submodule ${MODULE_NAME}
+    execute_process(COMMAND git submodule status ${MODULE_NAME}
         OUTPUT_VARIABLE RES
         WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
     string(SUBSTRING ${RES} 1 40 REV_ID)
