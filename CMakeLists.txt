@@ -1,4 +1,11 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+if (CMAKE_MAJOR_VERSION LESS 3)
+    if (WIN32)
+        message(STATUS "Your CMake version is less than 3.x, please download from http://www.cmake.org/download/")
+    else()
+        message(STATUS "Your CMake version is less than 3.x, please install (use your system's package manager or see OpenCMISS Utils)")
+    endif()
+endif()
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
 include(ExternalProject)
 
 # This later goes to the top level cmake script (or whereever that will be)
