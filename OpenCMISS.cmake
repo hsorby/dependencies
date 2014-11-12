@@ -67,6 +67,9 @@ if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/OpenCMISSLocalConfig.cmake)
 endif()
 include(OpenCMISSLocalConfig)
 
+# Add the utilities module path as well
+LIST(APPEND CMAKE_MODULE_PATH ${OCM_UTILITIES_DIR}/cmake_modules)
+
 # ================================
 # Postprocessing
 # ================================

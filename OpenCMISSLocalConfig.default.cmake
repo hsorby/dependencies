@@ -1,3 +1,5 @@
+SET(OCM_UTILITIES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../utils)
+
 # ==============================
 # Initial setup instructions
 # ==============================
@@ -74,11 +76,13 @@ SET(OCM_USE_SUPERLU_DIST NO)
 # appropriate consumed packages. No checks are performed on whether the consumed packages
 # will also be build by us or not, as they might be provided externally.
 #
-# To be safe: E.g. if you wanted to use MUMPS with METIS, also set OCM_USE_METIS=YES so that
-# the build system ensures that METIS will be available.
+# To be safe: E.g. if you wanted to use MUMPS with SCOTCH, also set OCM_USE_SCOTCH=YES so that
+# the build system ensures that SCOTCH will be available.
 # ==========================================================================================
-SET(MUMPS_WITH_METIS YES)
-SET(MUMPS_WITH_PARMETIS NO)
+SET(MUMPS_WITH_SCOTCH NO)
+SET(MUMPS_WITH_PTSCOTCH YES)
+#SET(MUMPS_WITH_METIS YES)
+#SET(MUMPS_WITH_PARMETIS NO)
 
 SET(SUNDIALS_WITH_LAPACK YES)
 

@@ -4,12 +4,16 @@ MACRO( ADD_EXTERNAL_PROJECT
 
     # additional args
 	SET( PROJECT_CMAKE_ARGS "")
+	# As the CMAKE_ARGS are a list themselves, we need to treat the ; in the (possible) list of module_paths
+	# specially. Therefore CMAKE has a special command $<SEMICOLON>
+	STRING(REPLACE ";" "$<SEMICOLON>" CMAKE_MODULE_PATH_ESC "${CMAKE_MODULE_PATH}")
 	LIST(APPEND PROJECT_CMAKE_ARGS
 	    -DCMAKE_INSTALL_PREFIX:PATH=${OCM_DEPS_INSTALL_PREFIX}
 	    -DCMAKE_BUILD_TYPE:PATH=${CMAKE_BUILD_TYPE}
 	    -DBUILD_PRECISION=${BUILD_PRECISION}
 	    -DBUILD_TESTS=${BUILD_TESTS}
 	    -DCMAKE_PREFIX_PATH=${OCM_DEPS_INSTALL_PREFIX}/lib
+	    -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH_ESC}
 	)
 	# check if MPI compilers should be forwarded/set
 	# so that the local FindMPI uses that
@@ -60,6 +64,7 @@ MACRO( ADD_EXTERNAL_PROJECT
         WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
     string(SUBSTRING ${RES} 1 40 REV_ID)
 
+    #message(STATUS "CMAKE ARGS: '${PROJECT_CMAKE_ARGS}'")
     if (OCM_DEVELOPER_MODE)
         # Retrieve current submodule revision if the submodule has not been
         # initialized, indicated by an "-" as first character of the submodules status string
