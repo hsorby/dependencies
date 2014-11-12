@@ -3,7 +3,7 @@ SET(OCM_UTILITIES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../utils)
 # ==============================
 # Initial setup instructions
 # ==============================
-SET(OCM_DEVELOPER_MODE ON)
+option(OCM_DEVELOPER_MODE "Handle the packages as proper submodules. DEVELOPERS ONLY." ON)
 
 # ==============================
 # Build configuration
