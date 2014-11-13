@@ -144,11 +144,19 @@ if (OCM_USE_PASTIX)
     endif()
 endif()
 
-# PETSc 2.3.5.1
+# PETSc 3.5
 if (OCM_USE_PETSC)
     FIND_PACKAGE(PETSC CONFIG QUIET)
     if(OCM_FORCE_PETSC OR NOT PETSC_FOUND)
         ADD_EXTERNAL_PROJECT(PETSC petsc)
+    endif()
+endif()
+
+# SLEPc 3.5
+if (OCM_USE_SLEPC)
+    FIND_PACKAGE(SLEPC CONFIG QUIET)
+    if(OCM_FORCE_SLEPC OR NOT SLEPC_FOUND)
+        ADD_EXTERNAL_PROJECT(SLEPC slepc)
     endif()
 endif()
 

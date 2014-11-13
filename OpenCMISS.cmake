@@ -27,13 +27,14 @@ SET(OCM_DEPS_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install${UNIXBUILDTYPEEX
 # List of all dependency packages
 SET(OCM_DEPS BLAS LAPACK PLAPACK SCALAPACK PARMETIS
     SUITESPARSE MUMPS SUPERLU SUPERLU_DIST
-    SUNDIALS SCOTCH PTSCOTCH PASTIX HYPRE PETSC CELLML)
+    SUNDIALS SCOTCH PTSCOTCH PASTIX HYPRE PETSC
+    CELLML SLEPC)
 
 # Dependencies using (any) MPI
 # Used to determine when MPI compilers etc should be passed down to packages
 SET(OCM_DEPS_WITHMPI MUMPS PARMETIS PASTIX PETSC
     PLAPACK SCALAPACK SCOTCH SUITESPARSE
-    SUNDIALS SUPERLU_DIST)
+    SUNDIALS SUPERLU_DIST SLEPC)
 
 # Forward/downstream dependencies (for cmake build ordering and dependency checking)
 # Its organized this way as not all backward dependencies might be built by the cmake
@@ -52,6 +53,7 @@ SET(SUNDIALS_FWD_DEPS PETSC)
 SET(SUPERLU_FWD_DEPS PETSC)
 SET(SUITESPARSE_FWD_DEPS PETSC)
 SET(SUPERLU_DIST_FWD_DEPS PETSC)
+SET(PETSC_FWD_DEPS SLEPC)
 
 # Default: Build all dependencies
 # This is changeable in the OpenCMISSLocalConfig file

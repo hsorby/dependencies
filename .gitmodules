@@ -40,3 +40,6 @@
 [submodule "libcellml"]
 	path = libcellml
 	url = https://github.com/OpenCMISS-Dependencies/libcellml.git
+[submodule "slepc"]
+	path = slepc
+	url = https://github.com/OpenCMISS-Dependencies/slepc.git
