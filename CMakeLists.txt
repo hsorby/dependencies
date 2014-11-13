@@ -152,6 +152,11 @@ if (OCM_USE_PETSC)
     endif()
 endif()
 
+# CellML
+if (OCM_USE_CELLML)
+    ADD_EXTERNAL_PROJECT(CELLML libcellml)
+endif()
+
 # Notes:
 # lapack: not sure if LAPACKE is build/required 
 # plapack: have only MACHINE_TYPE=500 and MANUFACTURE=50 (linux)
