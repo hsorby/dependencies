@@ -10,17 +10,6 @@ if (NOT CMAKE_BUILD_TYPE AND NOT WIN32)
     message(STATUS "No CMAKE_BUILD_TYPE has been defined. Using RELEASE.")
 endif()
 
-# The library path for all locally build dependencies
-if (NOT WIN32)
-    STRING(TOLOWER ${CMAKE_BUILD_TYPE} buildtype)
-    SET(UNIXBUILDTYPEEXTRA "/${buildtype}")
-else()
-    # The multiconfig generators for VS ignore the CMAKE_BUILD_TYPE and hence would cause trouble if
-    # any paths would've been deduced from that.
-    SET(UNIXBUILDTYPEEXTRA "")
-endif()
-SET(OCM_DEPS_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install${UNIXBUILDTYPEEXTRA})
-
 # ================================
 # Dependencies
 # ================================
@@ -71,6 +60,38 @@ include(OpenCMISSLocalConfig)
 
 # Add the utilities module path as well
 LIST(APPEND CMAKE_MODULE_PATH ${OCM_UTILITIES_DIR}/cmake_modules)
+
+# ================================
+# The installation path for all locally build dependencies
+# ================================
+SET(INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/install)
+if(OCM_USE_ARCHITECTURE_PATH)
+    # Architecture
+    include(TargetArch)
+    target_architecture(ARCH)
+    SET(INSTALL_DIR ${INSTALL_DIR}/${ARCH})
+    
+    # Compiler information
+    if(MPI_C_COMPILER OR MPI_Fortran_COMPILER)
+        get_filename_component(C_COMP_NAME ${MPI_C_COMPILER} NAME)
+        get_filename_component(F_COMP_NAME ${MPI_Fortran_COMPILER} NAME)
+    else()
+        get_filename_component(C_COMP_NAME ${CMAKE_C_COMPILER} NAME)
+        get_filename_component(F_COMP_NAME ${CMAKE_Fortran_COMPILER} NAME)
+    endif()
+    SET(INSTALL_DIR ${INSTALL_DIR}/${C_COMP_NAME}_${F_COMP_NAME})
+endif()
+
+if (NOT WIN32)
+    STRING(TOLOWER ${CMAKE_BUILD_TYPE} buildtype)
+    SET(UNIXBUILDTYPEEXTRA "/${buildtype}")
+else()
+    # The multiconfig generators for VS ignore the CMAKE_BUILD_TYPE and hence would cause trouble if
+    # any paths would've been deduced from that.
+    SET(UNIXBUILDTYPEEXTRA "")
+endif()
+SET(OCM_DEPS_INSTALL_PREFIX ${INSTALL_DIR}${UNIXBUILDTYPEEXTRA})
+message(STATUS "OpenCMISS dependencies will be installed to ${OCM_DEPS_INSTALL_PREFIX}")
 
 # ================================
 # Postprocessing
