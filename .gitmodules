@@ -1,47 +1,47 @@
 [submodule "plapack"]
-	path = plapack
+	path = src/plapack
 	url = https://github.com/OpenCMISS-Dependencies/plapack.git
 [submodule "mumps"]
-	path = mumps
+	path = src/mumps
 	url = https://github.com/OpenCMISS-Dependencies/mumps.git
 [submodule "parmetis"]
-	path = parmetis
+	path = src/parmetis
 	url = https://github.com/OpenCMISS-Dependencies/parmetis.git
 [submodule "scalapack"]
-	path = scalapack
+	path = src/scalapack
 	url = https://github.com/OpenCMISS-Dependencies/scalapack.git
 [submodule "suitesparse"]
-	path = suitesparse
+	path = src/suitesparse
 	url = https://github.com/OpenCMISS-Dependencies/suitesparse.git
 [submodule "lapack"]
-	path = lapack
+	path = src/lapack
 	url = https://github.com/OpenCMISS-Dependencies/lapack.git
 [submodule "hypre"]
-	path = hypre
+	path = src/hypre
 	url = https://github.com/OpenCMISS-Dependencies/hypre.git
 [submodule "superlu"]
-	path = superlu
+	path = src/superlu
 	url = https://github.com/OpenCMISS-Dependencies/superlu.git
 [submodule "superlu_dist"]
-	path = superlu_dist
+	path = src/superlu_dist
 	url = https://github.com/OpenCMISS-Dependencies/superlu_dist.git
 [submodule "sundials"]
-	path = sundials
+	path = src/sundials
 	url = https://github.com/OpenCMISS-Dependencies/sundials.git
 [submodule "scotch"]
-	path = scotch
+	path = src/scotch
 	url = https://github.com/OpenCMISS-Dependencies/scotch.git
 [submodule "pastix"]
-	path = pastix
+	path = src/pastix
 	url = https://github.com/OpenCMISS-Dependencies/pastix.git
 [submodule "petsc"]
-	path = petsc
+	path = src/petsc
 	url = https://github.com/OpenCMISS-Dependencies/petsc.git
 [submodule "libcellml"]
-	path = libcellml
+	path = src/libcellml
 	url = https://github.com/OpenCMISS-Dependencies/libcellml.git
 [submodule "slepc"]
-	path = slepc
+	path = src/slepc
 	url = https://github.com/OpenCMISS-Dependencies/slepc.git
 [submodule "hdf5"]
 	path = src/hdf5

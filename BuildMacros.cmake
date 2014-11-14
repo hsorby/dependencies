@@ -1,6 +1,11 @@
 MACRO( ADD_EXTERNAL_PROJECT 
     PROJECT_NAME
-    PROJECT_FOLDER)
+    SUBMODULE_NAME)
+    
+    # Until something better comes up
+    # Local module name
+    SET(MODULE_PATH src/${SUBMODULE_NAME})
+    SET(PROJECT_FOLDER ${CMAKE_CURRENT_BINARY_DIR}/${SUBMODULE_NAME})
 
     # additional args
 	SET( PROJECT_CMAKE_ARGS "")
@@ -36,11 +41,6 @@ MACRO( ADD_EXTERNAL_PROJECT
         message(STATUS "${PROJECT_NAME}: Using extra definition -D${extra_var}")
     endforeach()
 
-	#SET( PATCH_COMMAND_STRING )
-	#STRING( LENGTH "${PROJECT_PATCH_FILE}" PATCH_LENGTH )
-	#IF( PATCH_LENGTH GREATER 0 )
-	#	SET( PATCH_COMMAND_STRING "PATCH_COMMAND;${DEPENDENCIES_PATCH_EXECUTABLE};-p1;-i;${PROJECT_FOLDER}/download/${PROJECT_NAME}-${PROJECT_VERSION}.patch" )
-	#ENDIF( PATCH_LENGTH GREATER 0 )
 	# If we are builiding using devenv or msbuild we need to add the name of the solution file to the build and install command
 	SET( LOCAL_PLATFORM_BUILD_COMMAND ${PLATFORM_BUILD_COMMAND} )
 	SET( LOCAL_PLATFORM_INSTALL_COMMAND ${PLATFORM_INSTALL_COMMAND} )
@@ -56,75 +56,61 @@ MACRO( ADD_EXTERNAL_PROJECT
 		ENDIF( DEPENDENCIES_DEVENV_EXECUTABLE )			
 	ENDIF( GENERATOR_MATCH_VISUAL_STUDIO )
     
-    # We use the project folder name as module name
-    SET(MODULE_NAME ${PROJECT_FOLDER})
     # get current revision ID
-    execute_process(COMMAND git submodule status src/${MODULE_NAME}
+    execute_process(COMMAND git submodule status ${MODULE_PATH}
         OUTPUT_VARIABLE RES
         WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
     string(SUBSTRING ${RES} 1 40 REV_ID)
 
-    SET(DEPENDENCIES_SOURCE_DIR ${OpenCMISS_Dependencies_SOURCE_DIR}/src)
     #message(STATUS "CMAKE ARGS: '${PROJECT_CMAKE_ARGS}'")
+    SET(USERMODE_DOWNLOAD_CMDS )
     if (OCM_DEVELOPER_MODE)
         # Retrieve current submodule revision if the submodule has not been
         # initialized, indicated by an "-" as first character of the submodules status string
         # See http://git-scm.com/docs/git-submodule # status
         string(SUBSTRING ${RES} 0 1 SUBMOD_STATUS)
         if (SUBMOD_STATUS STREQUAL -)
-            message(STATUS "OpenCMISS Developer mode: Submodule ${MODULE_NAME} not initialized yet. Doing now..")
-            execute_process(COMMAND git submodule update --init --recursive ${MODULE_NAME}
-                WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
+            message(STATUS "OpenCMISS Developer mode: Submodule ${MODULE_PATH} not initialized yet. Doing now..")
+            execute_process(COMMAND git submodule update --init --recursive ${MODULE_PATH}
+                WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR}
+                ERROR_VARIABLE UPDATE_CMD_ERR)
+            if (UPDATE_CMD_ERR)
+                message(FATAL_ERROR "Error updating submodule '${MODULE_PATH}' (fix manually): ${UPDATE_CMD_ERR}")
+            endif()
             # Check out opencmiss branch
             execute_process(COMMAND git checkout opencmiss
-                WORKING_DIRECTORY ${DEPENDENCIES_SOURCE_DIR}/${PROJECT_FOLDER})
+                WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR}/${MODULE_PATH}
+                OUTPUT_VARIABLE CHECKOUT_DUMMY_OUTPUT #
+                ERROR_VARIABLE CHECKOUT_CMD_ERR)
+            #if (CHECKOUT_CMD_ERR)
+            #    message(FATAL_ERROR "Error checking out submodule '${MODULE_PATH}' (fix manually): ${CHECKOUT_CMD_ERR}")
+            #endif()
         endif()
-        
-    	ExternalProject_Add(${PROJECT_NAME}
-    		DEPENDS ${${PROJECT_NAME}_DEPS}
-    		PREFIX ${PROJECT_FOLDER}
-    		TMP_DIR ${PROJECT_FOLDER}/ep_tmp
-    		STAMP_DIR ${PROJECT_FOLDER}/ep_stamp
-    		#--Download step--------------
-    		# Dont need git clones via external project as we are in a git repo (dependencies)
-    		# HTTPS version
-    		#GIT_REPOSITORY https://github.com/rondiplomatico/${MODULE_NAME}/tree/${REV_ID}
-    		# SSH version
-    		#GIT_REPOSITORY git@github.com:rondiplomatico/${MODULE_NAME}/tree/${REV_ID}
-    		#GIT_REVISION ${PROJECT_REVISION}    		
-            DOWNLOAD_DIR ${DEPENDENCIES_SOURCE_DIR}/${PROJECT_FOLDER}/ep_dl
-    		#--Configure step-------------
-    		SOURCE_DIR ${DEPENDENCIES_SOURCE_DIR}/${PROJECT_FOLDER}
-    		BINARY_DIR ${PROJECT_FOLDER}
-    		CMAKE_ARGS ${PROJECT_CMAKE_ARGS}
-    		#--Build step-----------------
-    		BUILD_COMMAND ${LOCAL_PLATFORM_BUILD_COMMAND}
-    		#--Install step---------------
-    		INSTALL_COMMAND ${LOCAL_PLATFORM_INSTALL_COMMAND}
-    		)
     else()
-            # TODO
-            # write test script to see if https downloads work
-            # if not, use git archive --remote to use git's builtin ssl
-            # if not, tell people to get cmake with ssl or a newer git version
-            #message(STATUS "Downloading ${MODULE_NAME} revision ${REV_ID}...")
-            ExternalProject_Add(${PROJECT_NAME}
-    		DEPENDS ${${PROJECT_NAME}_DEPS}
-    		PREFIX ${PROJECT_FOLDER}
-    		#--Download step--------------
-    		DOWNLOAD_DIR ${DEPENDENCIES_SOURCE_DIR}/${PROJECT_FOLDER}
-    		URL https://github.com/rondiplomatico/${MODULE_NAME}/archive/${REV_ID}.zip
-    		#--Configure step-------------
-    		SOURCE_DIR ${DEPENDENCIES_SOURCE_DIR}/${PROJECT_FOLDER}
-    		BINARY_DIR ${PROJECT_FOLDER}
-    		CMAKE_ARGS ${PROJECT_CMAKE_ARGS}
-    		#--Build step-----------------
-    		BUILD_COMMAND ${LOCAL_PLATFORM_BUILD_COMMAND}
-    		#--Install step---------------
-    		INSTALL_COMMAND ${LOCAL_PLATFORM_INSTALL_COMMAND}
-    		)
+        SET(USERMODE_DOWNLOAD_CMDS URL https://github.com/OpenCMISS-Dependencies/${SUBMODULE_NAME}/archive/${REV_ID}.zip)    
     endif()
+        
+	ExternalProject_Add(${PROJECT_NAME}
+		DEPENDS ${${PROJECT_NAME}_DEPS}
+		PREFIX ${PROJECT_FOLDER}
+		TMP_DIR ${PROJECT_FOLDER}/ep_tmp
+		STAMP_DIR ${PROJECT_FOLDER}/ep_stamp
 		
+		#--Download step--------------
+		DOWNLOAD_DIR ${PROJECT_FOLDER}/ep_dl
+        ${USERMODE_DOWNLOAD_CMDS}
+        
+		#--Configure step-------------
+		SOURCE_DIR ${OpenCMISS_Dependencies_SOURCE_DIR}/${MODULE_PATH}
+		BINARY_DIR ${PROJECT_FOLDER}
+		CMAKE_ARGS ${PROJECT_CMAKE_ARGS}
+		
+		#--Build step-----------------
+		BUILD_COMMAND ${LOCAL_PLATFORM_BUILD_COMMAND}
+		#--Install step---------------
+		INSTALL_COMMAND ${LOCAL_PLATFORM_INSTALL_COMMAND}
+	)
+    	
 	UNSET( LOCAL_PLATFORM_BUILD_COMMAND )
 	UNSET( LOCAL_PLATFORM_INSTALL_COMMAND )
 	

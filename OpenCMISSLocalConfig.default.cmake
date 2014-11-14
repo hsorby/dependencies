@@ -52,6 +52,7 @@ SET(FORCE_OCM_ALLDEPS NO)
 # Choose here which optional dependencies/packages will be built by cmake.
 # The default is to build all
 
+#SET(OCM_USE_BLAS NO)
 #SET(OCM_USE_LAPACK NO)
 #SET(OCM_USE_SCALAPACK NO)
 #SET(OCM_USE_MUMPS NO)
@@ -67,6 +68,8 @@ SET(FORCE_OCM_ALLDEPS NO)
 #SET(OCM_USE_PASTIX NO)
 #SET(OCM_USE_HYPRE NO)
 #SET(OCM_USE_PETSC NO)
+#SET(OCM_USE_SLEPC NO)
+#SET(OCM_USE_LIBCELLML NO)
 
 # ==========================================================================================
 # Single module configuration
