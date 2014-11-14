@@ -59,11 +59,12 @@ MACRO( ADD_EXTERNAL_PROJECT
     # We use the project folder name as module name
     SET(MODULE_NAME ${PROJECT_FOLDER})
     # get current revision ID
-    execute_process(COMMAND git submodule status ${MODULE_NAME}
+    execute_process(COMMAND git submodule status src/${MODULE_NAME}
         OUTPUT_VARIABLE RES
         WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
     string(SUBSTRING ${RES} 1 40 REV_ID)
 
+    SET(DEPENDENCIES_SOURCE_DIR ${OpenCMISS_Dependencies_SOURCE_DIR}/src)
     #message(STATUS "CMAKE ARGS: '${PROJECT_CMAKE_ARGS}'")
     if (OCM_DEVELOPER_MODE)
         # Retrieve current submodule revision if the submodule has not been
@@ -76,12 +77,14 @@ MACRO( ADD_EXTERNAL_PROJECT
                 WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
             # Check out opencmiss branch
             execute_process(COMMAND git checkout opencmiss
-                WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR}/${PROJECT_FOLDER})
+                WORKING_DIRECTORY ${DEPENDENCIES_SOURCE_DIR}/${PROJECT_FOLDER})
         endif()
         
     	ExternalProject_Add(${PROJECT_NAME}
     		DEPENDS ${${PROJECT_NAME}_DEPS}
     		PREFIX ${PROJECT_FOLDER}
+    		TMP_DIR ${PROJECT_FOLDER}/ep_tmp
+    		STAMP_DIR ${PROJECT_FOLDER}/ep_stamp
     		#--Download step--------------
     		# Dont need git clones via external project as we are in a git repo (dependencies)
     		# HTTPS version
@@ -89,10 +92,10 @@ MACRO( ADD_EXTERNAL_PROJECT
     		# SSH version
     		#GIT_REPOSITORY git@github.com:rondiplomatico/${MODULE_NAME}/tree/${REV_ID}
     		#GIT_REVISION ${PROJECT_REVISION}    		
-
+            DOWNLOAD_DIR ${DEPENDENCIES_SOURCE_DIR}/${PROJECT_FOLDER}/ep_dl
     		#--Configure step-------------
-    		SOURCE_DIR ../${PROJECT_FOLDER}
-    		BINARY_DIR ${PROJECT_FOLDER}/build
+    		SOURCE_DIR ${DEPENDENCIES_SOURCE_DIR}/${PROJECT_FOLDER}
+    		BINARY_DIR ${PROJECT_FOLDER}
     		CMAKE_ARGS ${PROJECT_CMAKE_ARGS}
     		#--Build step-----------------
     		BUILD_COMMAND ${LOCAL_PLATFORM_BUILD_COMMAND}
@@ -109,11 +112,11 @@ MACRO( ADD_EXTERNAL_PROJECT
     		DEPENDS ${${PROJECT_NAME}_DEPS}
     		PREFIX ${PROJECT_FOLDER}
     		#--Download step--------------
-    		DOWNLOAD_DIR ../${PROJECT_FOLDER}
+    		DOWNLOAD_DIR ${DEPENDENCIES_SOURCE_DIR}/${PROJECT_FOLDER}
     		URL https://github.com/rondiplomatico/${MODULE_NAME}/archive/${REV_ID}.zip
     		#--Configure step-------------
-    		SOURCE_DIR ../${PROJECT_FOLDER}
-    		BINARY_DIR ${PROJECT_FOLDER}/build
+    		SOURCE_DIR ${DEPENDENCIES_SOURCE_DIR}/${PROJECT_FOLDER}
+    		BINARY_DIR ${PROJECT_FOLDER}
     		CMAKE_ARGS ${PROJECT_CMAKE_ARGS}
     		#--Build step-----------------
     		BUILD_COMMAND ${LOCAL_PLATFORM_BUILD_COMMAND}

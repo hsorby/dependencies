@@ -43,3 +43,6 @@
 [submodule "slepc"]
 	path = slepc
 	url = https://github.com/OpenCMISS-Dependencies/slepc.git
+[submodule "hdf5"]
+	path = src/hdf5
+	url = https://github.com/OpenCMISS-Dependencies/hdf5.git
