@@ -49,7 +49,9 @@ MACRO( ADD_EXTERNAL_PROJECT
     SET(USERMODE_DOWNLOAD_CMDS )
     # Default: Download the current revision
     if (NOT OCM_DEVELOPER_MODE)
-        SET(USERMODE_DOWNLOAD_CMDS URL https://github.com/OpenCMISS-Dependencies/${SUBMODULE_NAME}/archive/${REV_ID}.zip)    
+        SET(USERMODE_DOWNLOAD_CMDS URL https://github.com/OpenCMISS-Dependencies/${SUBMODULE_NAME}/archive/${REV_ID}.zip)
+    elseif(SUBMOD_STATUS STREQUAL -)
+        OCM_DEVELOPER_SUBMODULE_CHECKOUT(${OpenCMISS_Dependencies_SOURCE_DIR} ${MODULE_PATH} opencmiss)
     endif()        
 	ExternalProject_Add(${PROJECT_NAME}
 		DEPENDS ${${PROJECT_NAME}_DEPS}
@@ -72,9 +74,12 @@ MACRO( ADD_EXTERNAL_PROJECT
 		INSTALL_COMMAND ${LOCAL_PLATFORM_INSTALL_COMMAND}
 	)
 	# Add the checkout commands
-	if (OCM_DEVELOPER_MODE AND SUBMOD_STATUS STREQUAL -)
-        ADD_SUBMODULE_CHECKOUT_STEPS(${PROJECT_NAME} ${OpenCMISS_Dependencies_SOURCE_DIR} ${MODULE_PATH} opencmiss)
-    endif()
+	# Not usable at the moment as git is not threadsafe - multithreaded execution of the make script would
+	# otherwise try to lock the .git/config file for each thread - boom.
+	# Alternative: OCM_DEVELOPER_SUBMODULE_CHECKOUT above
+	#if (OCM_DEVELOPER_MODE AND SUBMOD_STATUS STREQUAL -)
+    #    ADD_SUBMODULE_CHECKOUT_STEPS(${PROJECT_NAME} ${OpenCMISS_Dependencies_SOURCE_DIR} ${MODULE_PATH} opencmiss)
+    #endif()
 	
 	UNSET( LOCAL_PLATFORM_BUILD_COMMAND )
 	UNSET( LOCAL_PLATFORM_INSTALL_COMMAND )

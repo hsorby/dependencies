@@ -1,21 +1,14 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
-
-if (NOT OPENCMISS_ROOT) # or whatever check is necessary
-    LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../utilities/CMakeScripts)
-endif()
-LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
-
 PROJECT(OpenCMISS_Dependencies VERSION 1.0 LANGUAGES C CXX Fortran)
 
-# ================================
-# Repeated code for self-containedness
-# ================================
-include(BuildMacros)
-option(OCM_DEVELOPER_MODE "Handle the packages as proper submodules. DEVELOPERS ONLY." ON)
-if (NOT CMAKE_BUILD_TYPE AND NOT WIN32)
-    SET(CMAKE_BUILD_TYPE RELEASE)
-    message(STATUS "No CMAKE_BUILD_TYPE has been defined. Using RELEASE.")
+# See if we're running outside of the opencmiss main build script
+if (NOT OPENCMISS_BUILD) 
+    SET(OPENCMISS_ROOT ${OpenCMISS_Dependencies_SOURCE_DIR}/..)
+    LIST(APPEND CMAKE_MODULE_PATH ${OPENCMISS_ROOT} 
+        ${OPENCMISS_ROOT}/utilities/CMakeScripts 
+        ${OPENCMISS_ROOT}/utilities/CMakeModules)
 endif()
+message(STATUS "OpenCMISS-Dependencies module path: ${CMAKE_MODULE_PATH}")
 
 # ================================
 # Dependencies
@@ -60,9 +53,6 @@ ENDFOREACH()
 # ================================
 # Read custom local config file
 # ================================
-if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/OpenCMISSLocalConfig.cmake)
-    configure_file(${CMAKE_CURRENT_LIST_DIR}/OpenCMISSLocalConfig.default.cmake ${CMAKE_CURRENT_LIST_DIR}/OpenCMISSLocalConfig.cmake COPYONLY)
-endif()
 include(OpenCMISSLocalConfig)
 
 # ================================
@@ -87,15 +77,19 @@ if(OCM_USE_ARCHITECTURE_PATH)
 endif()
 
 if (NOT WIN32)
-    STRING(TOLOWER ${CMAKE_BUILD_TYPE} buildtype)
-    SET(UNIXBUILDTYPEEXTRA "/${buildtype}")
+    if (CMAKE_BUILD_TYPE)
+        STRING(TOLOWER ${CMAKE_BUILD_TYPE} buildtype)
+        SET(UNIXBUILDTYPEEXTRA "/${buildtype}")
+    else()
+        SET(UNIXBUILDTYPEEXTRA "/noconfig")
+    endif()
 else()
     # The multiconfig generators for VS ignore the CMAKE_BUILD_TYPE and hence would cause trouble if
     # any paths would've been deduced from that.
     SET(UNIXBUILDTYPEEXTRA "")
 endif()
 SET(OCM_DEPS_INSTALL_PREFIX ${INSTALL_DIR}${UNIXBUILDTYPEEXTRA})
-message(STATUS "OpenCMISS dependencies will be installed to ${OCM_DEPS_INSTALL_PREFIX}")
+message(STATUS "OpenCMISS-Dependencies will be installed to ${OCM_DEPS_INSTALL_PREFIX}")
 
 # ================================
 # Postprocessing
@@ -118,7 +112,7 @@ FOREACH(OCM_DEP ${OCM_DEPS})
         endforeach()
     endif()
     
-    message(STATUS "Package ${OCM_DEP}: Build: ${OCM_USE_${OCM_DEP}}, Custom ${${OCM_DEP}_CUSTOM}, OCM forced: ${OCM_FORCE_${OCM_DEP}}")
+    message(STATUS "Package ${OCM_DEP}: Build: ${OCM_USE_${OCM_DEP}}, OCM forced: ${OCM_FORCE_${OCM_DEP}}")
 ENDFOREACH()
 
 # ================================
@@ -127,6 +121,7 @@ ENDFOREACH()
 # Note: The following order for all packages has to be in their interdependency order,
 # i.e. mumps may need scotch so scotch has to be processed first on order to be added to the 
 # external project dependencies list of any following package
+include(./OCMDepsBuildMacros.cmake)
 
 # LAPACK (includes BLAS)
 find_package(BLAS ${BLAS_VERSION} CONFIG QUIET)
