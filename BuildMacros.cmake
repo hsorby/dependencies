@@ -1,3 +1,5 @@
+include(OCMUtilsBuildMacros)
+
 MACRO( ADD_EXTERNAL_PROJECT 
     PROJECT_NAME
     SUBMODULE_NAME)
@@ -41,55 +43,14 @@ MACRO( ADD_EXTERNAL_PROJECT
         message(STATUS "${PROJECT_NAME}: Using extra definition -D${extra_var}")
     endforeach()
 
-	# If we are builiding using devenv or msbuild we need to add the name of the solution file to the build and install command
-	SET( LOCAL_PLATFORM_BUILD_COMMAND ${PLATFORM_BUILD_COMMAND} )
-	SET( LOCAL_PLATFORM_INSTALL_COMMAND ${PLATFORM_INSTALL_COMMAND} )
-	IF( GENERATOR_MATCH_VISUAL_STUDIO )
-		# Some solution names differ from their project name so we change those here
-		SET( SOLUTION_NAME ${PROJECT_NAME} )
-		IF( ${PROJECT_NAME} STREQUAL "InsightToolkit" )
-			SET( SOLUTION_NAME itk )
-		ENDIF()
-		LIST(INSERT LOCAL_PLATFORM_BUILD_COMMAND 1 ${SOLUTION_NAME}.sln )
-		IF( DEPENDENCIES_DEVENV_EXECUTABLE )
-			LIST(INSERT LOCAL_PLATFORM_INSTALL_COMMAND 1 ${SOLUTION_NAME}.sln )
-		ENDIF( DEPENDENCIES_DEVENV_EXECUTABLE )			
-	ENDIF( GENERATOR_MATCH_VISUAL_STUDIO )
-    
-    # get current revision ID
-    execute_process(COMMAND git submodule status ${MODULE_PATH}
-        OUTPUT_VARIABLE RES
-        WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR})
-    string(SUBSTRING ${RES} 1 40 REV_ID)
+	GET_BUILD_COMMANDS(LOCAL_PLATFORM_BUILD_COMMAND LOCAL_PLATFORM_INSTALL_COMMAND ${PROJECT_FOLDER})
+    GET_SUBMODULE_STATUS(SUBMOD_STATUS REV_ID ${OpenCMISS_Dependencies_SOURCE_DIR} ${MODULE_PATH})
 
-    #message(STATUS "CMAKE ARGS: '${PROJECT_CMAKE_ARGS}'")
     SET(USERMODE_DOWNLOAD_CMDS )
-    if (OCM_DEVELOPER_MODE)
-        # Retrieve current submodule revision if the submodule has not been
-        # initialized, indicated by an "-" as first character of the submodules status string
-        # See http://git-scm.com/docs/git-submodule # status
-        string(SUBSTRING ${RES} 0 1 SUBMOD_STATUS)
-        if (SUBMOD_STATUS STREQUAL -)
-            message(STATUS "OpenCMISS Developer mode: Submodule ${MODULE_PATH} not initialized yet. Doing now..")
-            execute_process(COMMAND git submodule update --init --recursive ${MODULE_PATH}
-                WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR}
-                ERROR_VARIABLE UPDATE_CMD_ERR)
-            if (UPDATE_CMD_ERR)
-                message(FATAL_ERROR "Error updating submodule '${MODULE_PATH}' (fix manually): ${UPDATE_CMD_ERR}")
-            endif()
-            # Check out opencmiss branch
-            execute_process(COMMAND git checkout opencmiss
-                WORKING_DIRECTORY ${OpenCMISS_Dependencies_SOURCE_DIR}/${MODULE_PATH}
-                OUTPUT_VARIABLE CHECKOUT_DUMMY_OUTPUT #
-                ERROR_VARIABLE CHECKOUT_CMD_ERR)
-            #if (CHECKOUT_CMD_ERR)
-            #    message(FATAL_ERROR "Error checking out submodule '${MODULE_PATH}' (fix manually): ${CHECKOUT_CMD_ERR}")
-            #endif()
-        endif()
-    else()
+    # Default: Download the current revision
+    if (NOT OCM_DEVELOPER_MODE)
         SET(USERMODE_DOWNLOAD_CMDS URL https://github.com/OpenCMISS-Dependencies/${SUBMODULE_NAME}/archive/${REV_ID}.zip)    
-    endif()
-        
+    endif()        
 	ExternalProject_Add(${PROJECT_NAME}
 		DEPENDS ${${PROJECT_NAME}_DEPS}
 		PREFIX ${PROJECT_FOLDER}
@@ -110,7 +71,11 @@ MACRO( ADD_EXTERNAL_PROJECT
 		#--Install step---------------
 		INSTALL_COMMAND ${LOCAL_PLATFORM_INSTALL_COMMAND}
 	)
-    	
+	# Add the checkout commands
+	if (OCM_DEVELOPER_MODE AND SUBMOD_STATUS STREQUAL -)
+        ADD_SUBMODULE_CHECKOUT_STEPS(${PROJECT_NAME} ${OpenCMISS_Dependencies_SOURCE_DIR} ${MODULE_PATH} opencmiss)
+    endif()
+	
 	UNSET( LOCAL_PLATFORM_BUILD_COMMAND )
 	UNSET( LOCAL_PLATFORM_INSTALL_COMMAND )
 	
@@ -130,6 +95,7 @@ MACRO(ADD_DOWNSTREAM_DEPS PACKAGE)
     endif()
 ENDMACRO()
 
+#[[ #Commmented out
 MACRO(EXTRACT_PKG_CONFIG PACKAGE_NAME)
     string(TOUPPER ${PACKAGE_NAME} PACKAGE_NAME_UPPER)
     SET(PKG_LIB ${PACKAGE_NAME_UPPER}_LIBRARIES)
@@ -145,10 +111,4 @@ MACRO(EXTRACT_PKG_CONFIG PACKAGE_NAME)
     
     message(STATUS "Extracted package information for ${PACKAGE_NAME}: ${PKG_LIB}=${${PKG_LIB}}, ${PKG_INCDIR}=${${PKG_INCDIR}}")
 ENDMACRO()
-
-FUNCTION(PRINT_VARS)
-    get_cmake_property(_variableNames VARIABLES)
-    foreach (_variableName ${_variableNames})
-        message(STATUS "VARDUMP -- ${_variableName}=${${_variableName}}")
-    endforeach()
-ENDFUNCTION()
+]]
