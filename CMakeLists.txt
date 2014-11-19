@@ -56,15 +56,17 @@ ENDFOREACH()
 include(OpenCMISSLocalConfig)
 
 # ================================
-# The installation path for all locally build dependencies
+# Default installation path if none is given
 # ================================
-SET(OCM_DEPS_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install)
-include(OCMUtilsArchitecture)
-if(OCM_USE_ARCHITECTURE_PATH)
-    APPEND_ARCHITECTURE_PATH(OCM_DEPS_INSTALL_PREFIX)
+if (NOT DEFINED CMAKE_INSTALL_PREFIX)
+    SET(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install)
+    include(OCMUtilsArchitecture)
+    if(OCM_USE_ARCHITECTURE_PATH)
+        APPEND_ARCHITECTURE_PATH(CMAKE_INSTALL_PREFIX)
+    endif()
+    APPEND_BUILDTYPE_PATH(CMAKE_INSTALL_PREFIX)
 endif()
-APPEND_BUILDTYPE_PATH(OCM_DEPS_INSTALL_PREFIX)
-message(STATUS "OpenCMISS-Dependencies will be installed to ${OCM_DEPS_INSTALL_PREFIX}")
+message(STATUS "OpenCMISS-Dependencies will be installed to ${CMAKE_INSTALL_PREFIX}")
 
 # ================================
 # Postprocessing
