@@ -1,4 +1,5 @@
 include(OCMUtilsBuildMacros)
+include(OCMUtilsArchitecture)
 
 MACRO( ADD_EXTERNAL_PROJECT 
     PROJECT_NAME
