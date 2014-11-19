@@ -58,37 +58,12 @@ include(OpenCMISSLocalConfig)
 # ================================
 # The installation path for all locally build dependencies
 # ================================
-SET(INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/install)
+SET(OCM_DEPS_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install)
+include(OCMUtilsArchitecture)
 if(OCM_USE_ARCHITECTURE_PATH)
-    # Architecture
-    include(TargetArch)
-    target_architecture(ARCH)
-    SET(INSTALL_DIR ${INSTALL_DIR}/${ARCH})
-    
-    # Compiler information
-    if(MPI_C_COMPILER OR MPI_Fortran_COMPILER)
-        get_filename_component(C_COMP_NAME ${MPI_C_COMPILER} NAME)
-        get_filename_component(F_COMP_NAME ${MPI_Fortran_COMPILER} NAME)
-    else()
-        get_filename_component(C_COMP_NAME ${CMAKE_C_COMPILER} NAME)
-        get_filename_component(F_COMP_NAME ${CMAKE_Fortran_COMPILER} NAME)
-    endif()
-    SET(INSTALL_DIR ${INSTALL_DIR}/${C_COMP_NAME}_${F_COMP_NAME})
+    APPEND_ARCHITECTURE_PATH(OCM_DEPS_INSTALL_PREFIX)
 endif()
-
-if (NOT WIN32)
-    if (CMAKE_BUILD_TYPE)
-        STRING(TOLOWER ${CMAKE_BUILD_TYPE} buildtype)
-        SET(UNIXBUILDTYPEEXTRA "/${buildtype}")
-    else()
-        SET(UNIXBUILDTYPEEXTRA "/noconfig")
-    endif()
-else()
-    # The multiconfig generators for VS ignore the CMAKE_BUILD_TYPE and hence would cause trouble if
-    # any paths would've been deduced from that.
-    SET(UNIXBUILDTYPEEXTRA "")
-endif()
-SET(OCM_DEPS_INSTALL_PREFIX ${INSTALL_DIR}${UNIXBUILDTYPEEXTRA})
+APPEND_BUILDTYPE_PATH(OCM_DEPS_INSTALL_PREFIX)
 message(STATUS "OpenCMISS-Dependencies will be installed to ${OCM_DEPS_INSTALL_PREFIX}")
 
 # ================================
