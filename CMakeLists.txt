@@ -2,13 +2,22 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
 PROJECT(OpenCMISS_Dependencies VERSION 1.0 LANGUAGES C CXX Fortran)
 
 # See if we're running outside of the opencmiss main build script
+# We still need the dependencies
 if (NOT OPENCMISS_BUILD) 
-    SET(OPENCMISS_ROOT ${OpenCMISS_Dependencies_SOURCE_DIR}/..)
-    LIST(APPEND CMAKE_MODULE_PATH ${OPENCMISS_ROOT} 
-        ${OPENCMISS_ROOT}/utilities/CMakeScripts 
-        ${OPENCMISS_ROOT}/utilities/CMakeModules)
+    SET(OPENCMISS_UTILITIES_DIR ${OpenCMISS_Dependencies_SOURCE_DIR}/../utilities)
+    if(NOT EXISTS ${OPENCMISS_UTILITIES_DIR})
+        message(FATAL_ERROR "Cant build dependencies directly: Utilities folder ${OPENCMISS_UTILITIES_DIR} missing.")
+    endif()
+    if(NOT EXISTS ${OpenCMISS_Dependencies_SOURCE_DIR}/../OpenCMISSLocalConfig.cmake)
+        message(FATAL_ERROR "Cant build dependencies directly: Missing ${OpenCMISS_Dependencies_SOURCE_DIR}/../OpenCMISSLocalConfig.cmake")
+    endif()
+    LIST(APPEND CMAKE_MODULE_PATH 
+        ${OPENCMISS_UTILITIES_DIR}/CMakeFindModuleWrappers
+        ${OpenCMISS_Dependencies_SOURCE_DIR}/..
+        ${OPENCMISS_UTILITIES_DIR}/CMakeModules
+        ${OPENCMISS_UTILITIES_DIR}/CMakeScripts)
 endif()
-message(STATUS "OpenCMISS-Dependencies module path: ${CMAKE_MODULE_PATH}")
+#message(STATUS "OpenCMISS-Dependencies module path: ${CMAKE_MODULE_PATH}")
 
 # ================================
 # Dependencies
@@ -56,19 +65,6 @@ ENDFOREACH()
 include(OpenCMISSLocalConfig)
 
 # ================================
-# Default installation path if none is given
-# ================================
-if (NOT DEFINED CMAKE_INSTALL_PREFIX)
-    SET(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install)
-    include(OCMUtilsArchitecture)
-    if(OCM_USE_ARCHITECTURE_PATH)
-        APPEND_ARCHITECTURE_PATH(CMAKE_INSTALL_PREFIX)
-    endif()
-    APPEND_BUILDTYPE_PATH(CMAKE_INSTALL_PREFIX)
-endif()
-message(STATUS "OpenCMISS-Dependencies will be installed to ${CMAKE_INSTALL_PREFIX}")
-
-# ================================
 # Postprocessing
 # ================================
 FOREACH(OCM_DEP ${OCM_DEPS})
@@ -93,30 +89,53 @@ FOREACH(OCM_DEP ${OCM_DEPS})
 ENDFOREACH()
 
 # ================================
+# Default installation path if none is given
+# ================================
+include(./OCMDepsBuildMacros.cmake)
+
+if (NOT OPENCMISS_BUILD AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    # Need MPI information for correct arch path
+    find_package(MPI MODULE QUIET)
+    # Re-set the MPI_C_COMPILER values to the ones provided (if so)
+    # This is dirty but ok for now
+    include(OpenCMISSLocalConfig)
+    GET_ARCHITECTURE_PATH(ARCHITECTURE_PATH)
+    SET(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install/${ARCHITECTURE_PATH})
+endif()
+message(STATUS "OpenCMISS-Dependencies will be installed to ${CMAKE_INSTALL_PREFIX}")
+
+# ================================
 # Package creation
 # ================================
 # Note: The following order for all packages has to be in their interdependency order,
 # i.e. mumps may need scotch so scotch has to be processed first on order to be added to the 
 # external project dependencies list of any following package
-include(./OCMDepsBuildMacros.cmake)
 
 # LAPACK (includes BLAS)
-find_package(BLAS ${BLAS_VERSION} CONFIG QUIET)
-find_package(LAPACK ${LAPACK_VERSION} CONFIG QUIET)
+if(NOT OCM_FORCE_BLAS)
+    find_package(BLAS ${BLAS_VERSION} QUIET)
+endif()
+if(NOT OCM_FORCE_LAPACK) 
+    find_package(LAPACK ${LAPACK_VERSION} QUIET)
+endif()    
 if(OCM_FORCE_BLAS OR OCM_FORCE_LAPACK OR NOT (LAPACK_FOUND AND BLAS_FOUND))
     ADD_EXTERNAL_PROJECT(LAPACK lapack)
 endif()
 
 # Scotch 6.0
 if (OCM_USE_PTSCOTCH)
-    FIND_PACKAGE(PTSCOTCH ${PTSCOTCH_VERSION} CONFIG QUIET)
+    if (NOT OCM_FORCE_PTSCOTCH)
+        FIND_PACKAGE(PTSCOTCH ${PTSCOTCH_VERSION} QUIET)
+    endif()
     if(OCM_FORCE_PTSCOTCH OR NOT PTSCOTCH_FOUND)
         ADD_EXTERNAL_PROJECT(SCOTCH scotch
-            BUILD_PTSCOTCH=YES USE_GZ=${SCOTCH_USE_GZ} 
+            BUILD_PTSCOTCH=YES USE_GZ=${SCOTCH_USE_GZ}
             USE_PTHREAD=${SCOTCH_USE_PTHREAD})
     endif()
 elseif(OCM_USE_SCOTCH)
-    FIND_PACKAGE(SCOTCH ${SCOTCH_VERSION} CONFIG QUIET)
+    if(NOT OCM_FORCE_SCOTCH)
+        FIND_PACKAGE(SCOTCH ${SCOTCH_VERSION} QUIET)
+    endif()
     if(OCM_FORCE_SCOTCH OR NOT SCOTCH_FOUND)
         ADD_EXTERNAL_PROJECT(SCOTCH scotch 
             BUILD_PTSCOTCH=NO USE_GZ=${SCOTCH_USE_GZ}
@@ -126,7 +145,9 @@ endif()
 
 # PLAPACK
 if(OCM_USE_PLAPACK)
-    FIND_PACKAGE(PLAPACK CONFIG QUIET)
+    if(NOT OCM_FORCE_PLAPACK)
+        FIND_PACKAGE(PLAPACK QUIET)
+    endif()        
     if(OCM_FORCE_PLAPACK OR NOT PLAPACK_FOUND)
         ADD_EXTERNAL_PROJECT(PLAPACK plapack
             BLAS_VERSION=${BLAS_VERSION}
@@ -136,7 +157,9 @@ endif()
 
 # ScaLAPACK
 if(OCM_USE_SCALAPACK)
-    FIND_PACKAGE(SCALAPACK ${SCALAPACK_VERSION} CONFIG QUIET)
+    if(NOT OCM_FORCE_SCALAPACK)
+        FIND_PACKAGE(SCALAPACK ${SCALAPACK_VERSION} QUIET)
+    endif()
     if(OCM_FORCE_SCALAPACK OR NOT SCALAPACK_FOUND)
         ADD_EXTERNAL_PROJECT(SCALAPACK scalapack
             BLAS_VERSION=${BLAS_VERSION}
@@ -146,7 +169,9 @@ endif()
 
 # parMETIS 4 (+METIS 5)
 if(OCM_USE_PARMETIS)
-    FIND_PACKAGE(PARMETIS ${PARMETIS_VERSION} CONFIG QUIET)
+    if(NOT OCM_FORCE_PARMETIS)
+        FIND_PACKAGE(PARMETIS ${PARMETIS_VERSION} QUIET)
+    endif()
     if(OCM_FORCE_PARMETIS OR NOT PARMETIS_FOUND)
         ADD_EXTERNAL_PROJECT(PARMETIS parmetis)
     endif()
@@ -154,7 +179,9 @@ endif()
 
 # MUMPS
 if (OCM_USE_MUMPS)
-    FIND_PACKAGE(MUMPS CONFIG QUIET)
+    if(NOT OCM_FORCE_MUMPS)
+        FIND_PACKAGE(MUMPS QUIET)
+    endif()
     if(OCM_FORCE_MUMPS OR NOT MUMPS_FOUND)
         ADD_EXTERNAL_PROJECT(MUMPS mumps 
             USE_SCOTCH=${MUMPS_WITH_SCOTCH}
@@ -169,7 +196,9 @@ endif()
 
 # SUITESPARSE [CHOLMOD / UMFPACK]
 if (OCM_USE_SUITESPARSE)
-    FIND_PACKAGE(SUITESPARSE ${SUITESPARSE_VERSION} CONFIG QUIET)
+    if(NOT OCM_FORCE_SUITESPARSE)
+        FIND_PACKAGE(SUITESPARSE ${SUITESPARSE_VERSION} QUIET)
+    endif()
     if(OCM_FORCE_SUITESPARSE OR NOT SUITESPARSE_FOUND)
         ADD_EXTERNAL_PROJECT(SUITESPARSE suitesparse
             BLAS_VERSION=${BLAS_VERSION}
@@ -180,7 +209,9 @@ endif()
 
 # Hypre 2.9.0b
 if (OCM_USE_HYPRE)
-    FIND_PACKAGE(HYPRE ${HYPRE_VERSION} CONFIG QUIET)
+    if(NOT OCM_FORCE_HYPRE)
+        FIND_PACKAGE(HYPRE ${HYPRE_VERSION} QUIET)
+    endif()
     if(OCM_FORCE_HYPRE OR NOT HYPRE_FOUND)
         ADD_EXTERNAL_PROJECT(HYPRE hypre
             BLAS_VERSION=${BLAS_VERSION}
@@ -190,7 +221,9 @@ endif()
 
 # SuperLU 4.3
 if (OCM_USE_SUPERLU)
-    FIND_PACKAGE(SUPERLU ${SUPERLU_VERSION} CONFIG QUIET)
+    if(NOT OCM_FORCE_SUPERLU)
+        FIND_PACKAGE(SUPERLU ${SUPERLU_VERSION} QUIET)
+    endif()        
     if(OCM_FORCE_SUPERLU OR NOT SUPERLU_FOUND)
         ADD_EXTERNAL_PROJECT(SUPERLU superlu
             BLAS_VERSION=${BLAS_VERSION}
@@ -200,7 +233,9 @@ endif()
 
 # SuperLU-DIST 4.0
 if (OCM_USE_SUPERLU_DIST)
-    FIND_PACKAGE(SUPERLU_DIST ${SUPERLU_DIST_VERSION} CONFIG QUIET)
+    if(NOT OCM_FORCE_SUPERLU_DIST)
+        FIND_PACKAGE(SUPERLU_DIST ${SUPERLU_DIST_VERSION} QUIET)
+    endif()        
     if(OCM_FORCE_SUPERLU_DIST OR NOT SUPERLU_DIST_FOUND)
         ADD_EXTERNAL_PROJECT(SUPERLU_DIST superlu_dist
             BLAS_VERSION=${BLAS_VERSION}
@@ -214,7 +249,9 @@ endif()
 
 # Sundials 2.5
 if (OCM_USE_SUNDIALS)
-    FIND_PACKAGE(SUNDIALS ${SUNDIALS_VERSION} CONFIG QUIET)
+    if(NOT OCM_FORCE_SUNDIALS)
+        FIND_PACKAGE(SUNDIALS ${SUNDIALS_VERSION} QUIET)
+    endif()
     if(OCM_FORCE_SUNDIALS OR NOT SUNDIALS_FOUND)
         ADD_EXTERNAL_PROJECT(SUNDIALS sundials
             USE_LAPACK=${SUNDIALS_WITH_LAPACK}
@@ -225,7 +262,9 @@ endif()
 
 # Pastix 5.2.2.16
 if (OCM_USE_PASTIX)
-    FIND_PACKAGE(PASTIX ${PASTIX_VERSION} CONFIG QUIET)
+    if(NOT OCM_FORCE_PASTIX)
+        FIND_PACKAGE(PASTIX ${PASTIX_VERSION} QUIET)
+    endif()
     if(OCM_FORCE_PASTIX OR NOT PASTIX_FOUND)
         ADD_EXTERNAL_PROJECT(PASTIX pastix
             INT_TYPE=${INT_TYPE}
@@ -237,7 +276,9 @@ endif()
 
 # PETSc 3.5
 if (OCM_USE_PETSC)
-    FIND_PACKAGE(PETSC ${PETSC_VERSION} CONFIG QUIET)
+    if(NOT OCM_FORCE_PETSC)
+        FIND_PACKAGE(PETSC ${PETSC_VERSION} QUIET)
+    endif()
     if(OCM_FORCE_PETSC OR NOT PETSC_FOUND)
         ADD_EXTERNAL_PROJECT(PETSC petsc
             HYPRE_VERSION=${HYPRE_VERSION}
@@ -255,7 +296,9 @@ endif()
 
 # SLEPc 3.5
 if (OCM_USE_SLEPC)
-    FIND_PACKAGE(SLEPC ${SLEPC_VERSION} CONFIG QUIET)
+    if(NOT OCM_FORCE_SLEPC)
+        FIND_PACKAGE(SLEPC ${SLEPC_VERSION} QUIET)
+    endif()
     if(OCM_FORCE_SLEPC OR NOT SLEPC_FOUND)
         ADD_EXTERNAL_PROJECT(SLEPC slepc
             HYPRE_VERSION=${HYPRE_VERSION}
@@ -273,7 +316,7 @@ if (OCM_USE_SLEPC)
 endif()
 
 # CellML
-if (OCM_USE_CELLML)
+if (OCM_USE_LIBCELLML)
     ADD_EXTERNAL_PROJECT(CELLML libcellml)
 endif()
 

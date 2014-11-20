@@ -1,18 +1,16 @@
 include(OCMUtilsBuildMacros)
 include(OCMUtilsArchitecture)
 
-MACRO( ADD_EXTERNAL_PROJECT 
+MACRO(ADD_EXTERNAL_PROJECT 
     PROJECT_NAME
     SUBMODULE_NAME)
     
-    # Until something better comes up
-    # Local module name
+    # Module path that makes sense to git
     SET(MODULE_PATH src/${SUBMODULE_NAME})
-    SET(PROJECT_FOLDER ${CMAKE_CURRENT_BINARY_DIR}/${SUBMODULE_NAME})
-    if (OCM_USE_ARCHITECTURE_PATH)
-        APPEND_ARCHITECTURE_PATH(PROJECT_FOLDER)
-    endif()
-    APPEND_BUILDTYPE_PATH(PROJECT_FOLDER)
+    # Complete build dir
+    SET(PROJECT_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/${SUBMODULE_NAME}/${ARCHITECTURE_PATH})
+    
+    message(STATUS "Building OpenCMISS dependency ${PROJECT_NAME} in ${PROJECT_BUILD_DIR}...")
 
     # additional args
 	SET( PROJECT_CMAKE_ARGS "")
@@ -20,17 +18,22 @@ MACRO( ADD_EXTERNAL_PROJECT
 	# specially. Therefore CMAKE has a special command $<SEMICOLON>
 	STRING(REPLACE ";" "$<SEMICOLON>" CMAKE_MODULE_PATH_ESC "${CMAKE_MODULE_PATH}")
 	LIST(APPEND PROJECT_CMAKE_ARGS
-	    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
-	    -DCMAKE_BUILD_TYPE:PATH=${CMAKE_BUILD_TYPE}
+	    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+	    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 	    -DBUILD_PRECISION=${BUILD_PRECISION}
 	    -DBUILD_TESTS=${BUILD_TESTS}
-	    -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}/lib
+	    -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}/lib/cmake
 	    -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH_ESC}
 	)
 	# check if MPI compilers should be forwarded/set
 	# so that the local FindMPI uses that
-	foreach(DEP OCM_DEPS_WITHMPI)
-	    if(DEP STREQUAL PROJECT_NAME)
+	foreach(DEP ${OCM_DEPS_WITHMPI})
+	    if(${DEP} STREQUAL ${PROJECT_NAME})
+	        if (MPI_HOME)
+	            LIST(APPEND PROJECT_CMAKE_ARGS
+                    -DMPI_HOME=${MPI_HOME}
+                )
+	        endif()
 	        foreach(lang C CXX Fortran)
 	            if(MPI_${lang}_COMPILER)
 	                LIST(APPEND PROJECT_CMAKE_ARGS
@@ -40,15 +43,19 @@ MACRO( ADD_EXTERNAL_PROJECT
 	        endforeach()
 	    endif()
 	endforeach()
+	# Pass on force flags (consumed by find_package calls)
+	if (OCM_FORCE_${PROJECT_NAME})
+	    LIST(APPEND PROJECT_CMAKE_ARGS -DOCM_FORCE_${PROJECT_NAME}=${OCM_FORCE_${PROJECT_NAME}})
+	endif()
 	# Forward any other variables
-    foreach(extra_var ${ARGN})
-        #LIST(APPEND PROJECT_CMAKE_ARGS -D${extra_var}=${${extra_var}})
-        #message(STATUS "Appending extra definition -D${extra_var}=${${extra_var}}")
-        LIST(APPEND PROJECT_CMAKE_ARGS -D${extra_var})
-        message(STATUS "${PROJECT_NAME}: Using extra definition -D${extra_var}")
+    foreach(extra_def ${ARGN})
+        LIST(APPEND PROJECT_CMAKE_ARGS -D${extra_def})
+        #message(STATUS "${PROJECT_NAME}: Using extra definition -D${extra_def}")
     endforeach()
+    
+    #message(STATUS "OpenCMISS dependency ${PROJECT_NAME} extra args:\n${PROJECT_CMAKE_ARGS}")
 
-	GET_BUILD_COMMANDS(LOCAL_PLATFORM_BUILD_COMMAND LOCAL_PLATFORM_INSTALL_COMMAND ${PROJECT_FOLDER})
+	GET_BUILD_COMMANDS(BUILD_COMMAND INSTALL_COMMAND ${PROJECT_BUILD_DIR})
     GET_SUBMODULE_STATUS(SUBMOD_STATUS REV_ID ${OpenCMISS_Dependencies_SOURCE_DIR} ${MODULE_PATH})
 
     SET(USERMODE_DOWNLOAD_CMDS )
@@ -57,26 +64,28 @@ MACRO( ADD_EXTERNAL_PROJECT
         SET(USERMODE_DOWNLOAD_CMDS URL https://github.com/OpenCMISS-Dependencies/${SUBMODULE_NAME}/archive/${REV_ID}.zip)
     elseif(SUBMOD_STATUS STREQUAL -)
         OCM_DEVELOPER_SUBMODULE_CHECKOUT(${OpenCMISS_Dependencies_SOURCE_DIR} ${MODULE_PATH} opencmiss)
-    endif()        
+    endif()
+    #message("Using INSTALL_DIR ${CMAKE_INSTALL_PREFIX}")
 	ExternalProject_Add(${PROJECT_NAME}
 		DEPENDS ${${PROJECT_NAME}_DEPS}
-		PREFIX ${PROJECT_FOLDER}
-		TMP_DIR ${PROJECT_FOLDER}/ep_tmp
-		STAMP_DIR ${PROJECT_FOLDER}/ep_stamp
+		PREFIX ${PROJECT_BUILD_DIR}
+		TMP_DIR ${PROJECT_BUILD_DIR}/ep_tmp
+		STAMP_DIR ${PROJECT_BUILD_DIR}/ep_stamp
 		
 		#--Download step--------------
-		DOWNLOAD_DIR ${PROJECT_FOLDER}/ep_dl
+		DOWNLOAD_DIR ${PROJECT_BUILD_DIR}/ep_dl
         ${USERMODE_DOWNLOAD_CMDS}
         
 		#--Configure step-------------
 		SOURCE_DIR ${OpenCMISS_Dependencies_SOURCE_DIR}/${MODULE_PATH}
-		BINARY_DIR ${PROJECT_FOLDER}
+		BINARY_DIR ${PROJECT_BUILD_DIR}
 		CMAKE_ARGS ${PROJECT_CMAKE_ARGS}
 		
 		#--Build step-----------------
-		BUILD_COMMAND ${LOCAL_PLATFORM_BUILD_COMMAND}
+		BUILD_COMMAND ${BUILD_COMMAND}
 		#--Install step---------------
-		INSTALL_COMMAND ${LOCAL_PLATFORM_INSTALL_COMMAND}
+		#INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+		INSTALL_COMMAND ${INSTALL_COMMAND}
 	)
 	# Add the checkout commands
 	# Not usable at the moment as git is not threadsafe - multithreaded execution of the make script would
@@ -86,8 +95,9 @@ MACRO( ADD_EXTERNAL_PROJECT
     #    ADD_SUBMODULE_CHECKOUT_STEPS(${PROJECT_NAME} ${OpenCMISS_Dependencies_SOURCE_DIR} ${MODULE_PATH} opencmiss)
     #endif()
 	
-	UNSET( LOCAL_PLATFORM_BUILD_COMMAND )
-	UNSET( LOCAL_PLATFORM_INSTALL_COMMAND )
+	# Be a tidy kiwi
+	UNSET( BUILD_COMMAND )
+	UNSET( INSTALL_COMMAND )
 	
 	# Add the dependency information for other downstream packages that might use this one
 	ADD_DOWNSTREAM_DEPS(${PROJECT_NAME})
