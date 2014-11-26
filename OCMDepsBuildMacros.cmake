@@ -7,8 +7,9 @@ MACRO(ADD_EXTERNAL_PROJECT
     
     # Module path that makes sense to git
     SET(MODULE_PATH src/${SUBMODULE_NAME})
-    # Complete build dir
-    SET(PROJECT_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/${SUBMODULE_NAME}/${ARCHITECTURE_PATH})
+    # Complete build dir with debug/release AFTER package name
+    get_build_type_extra(BUILDTYPEEXTRA)
+    SET(PROJECT_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/${SUBMODULE_NAME}/${BUILDTYPEEXTRA})
     
     message(STATUS "Building OpenCMISS dependency ${PROJECT_NAME} in ${PROJECT_BUILD_DIR}...")
 
@@ -24,11 +25,25 @@ MACRO(ADD_EXTERNAL_PROJECT
 	    -DBUILD_TESTS=${BUILD_TESTS}
 	    -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}/lib/cmake
 	    -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH_ESC}
+	    -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
 	)
+	# Add compiler flags
+    foreach(lang C CXX Fortran)
+        if (CMAKE_${lang}_FLAGS)
+            LIST(APPEND PROJECT_CMAKE_ARGS
+                -DCMAKE_${lang}_FLAGS=${CMAKE_${lang}_FLAGS}
+            )
+        endif()
+    endforeach()
 	# check if MPI compilers should be forwarded/set
 	# so that the local FindMPI uses that
 	foreach(DEP ${OCM_DEPS_WITHMPI})
 	    if(${DEP} STREQUAL ${PROJECT_NAME})
+	        if (MPI)
+	            LIST(APPEND PROJECT_CMAKE_ARGS
+                    -DMPI=${MPI}
+                )
+	        endif()
 	        if (MPI_HOME)
 	            LIST(APPEND PROJECT_CMAKE_ARGS
                     -DMPI_HOME=${MPI_HOME}
@@ -84,7 +99,8 @@ MACRO(ADD_EXTERNAL_PROJECT
 		#--Build step-----------------
 		BUILD_COMMAND ${BUILD_COMMAND}
 		#--Install step---------------
-		#INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+		# currently set as extra arg (above)
+		#INSTALL_DIR ${CMAKE_INSTALL_PREFIX} 
 		INSTALL_COMMAND ${INSTALL_COMMAND}
 	)
 	# Add the checkout commands

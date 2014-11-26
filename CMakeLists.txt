@@ -32,7 +32,7 @@ SET(OCM_DEPS BLAS LAPACK PLAPACK SCALAPACK PARMETIS
 # Used to determine when MPI compilers etc should be passed down to packages
 SET(OCM_DEPS_WITHMPI MUMPS PARMETIS PASTIX PETSC
     PLAPACK SCALAPACK SCOTCH SUITESPARSE
-    SUNDIALS SUPERLU_DIST SLEPC)
+    SUNDIALS SUPERLU_DIST SLEPC HYPRE)
 
 # Forward/downstream dependencies (for cmake build ordering and dependency checking)
 # Its organized this way as not all backward dependencies might be built by the cmake
@@ -96,11 +96,10 @@ include(./OCMDepsBuildMacros.cmake)
 if (NOT OPENCMISS_BUILD AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     # Need MPI information for correct arch path
     find_package(MPI MODULE QUIET)
-    # Re-set the MPI_C_COMPILER values to the ones provided (if so)
-    # This is dirty but ok for now
-    include(OpenCMISSLocalConfig)
-    GET_ARCHITECTURE_PATH(ARCHITECTURE_PATH)
-    SET(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install/${ARCHITECTURE_PATH})
+    #include(OpenCMISSLocalConfig)
+    get_architecture_path(ARCHITECTURE_PATH)
+    get_build_type_extra(BUILDTYPEEXTRA)
+    SET(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install/${ARCHITECTURE_PATH}/${BUILDTYPEEXTRA})
 endif()
 message(STATUS "OpenCMISS-Dependencies will be installed to ${CMAKE_INSTALL_PREFIX}")
 
