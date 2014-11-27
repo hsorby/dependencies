@@ -82,3 +82,6 @@
 [submodule "src/gdcm"]
 	path = src/gdcm
 	url = https://github.com/OpenCMISS-Dependencies/gdcm.git
+[submodule "src/ftgl"]
+	path = src/ftgl
+	url = https://github.com/OpenCMISS-Dependencies/ftgl.git
