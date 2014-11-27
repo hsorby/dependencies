@@ -64,3 +64,6 @@
 [submodule "src/netgen"]
 	path = src/netgen
 	url = https://github.com/OpenCMISS-Dependencies/netgen.git
+[submodule "src/libxml2"]
+	path = src/libxml2
+	url = https://github.com/OpenCMISS-Dependencies/libxml2.git
