@@ -61,3 +61,6 @@
 [submodule "src/optpp"]
 	path = src/optpp
 	url = https://github.com/OpenCMISS-Dependencies/optpp.git
+[submodule "src/netgen"]
+	path = src/netgen
+	url = https://github.com/OpenCMISS-Dependencies/netgen.git
