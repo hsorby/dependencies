@@ -55,3 +55,6 @@
 [submodule "src/tiff"]
 	path = src/tiff
 	url = https://github.com/OpenCMISS-Dependencies/tiff.git
+[submodule "src/pcre"]
+	path = src/pcre
+	url = https://github.com/OpenCMISS-Dependencies/pcre.git
