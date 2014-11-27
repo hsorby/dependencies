@@ -73,3 +73,6 @@
 [submodule "src/jpeg"]
 	path = src/jpeg
 	url = https://github.com/OpenCMISS-Dependencies/jpeg.git
+[submodule "src/itk"]
+	path = src/itk
+	url = https://github.com/OpenCMISS-Dependencies/itk.git
