@@ -85,3 +85,6 @@
 [submodule "src/ftgl"]
 	path = src/ftgl
 	url = https://github.com/OpenCMISS-Dependencies/ftgl.git
+[submodule "src/freetype2"]
+	path = src/freetype2
+	url = https://github.com/OpenCMISS-Dependencies/freetype2.git
