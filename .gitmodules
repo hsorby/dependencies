@@ -58,3 +58,6 @@
 [submodule "src/pcre"]
 	path = src/pcre
 	url = https://github.com/OpenCMISS-Dependencies/pcre.git
+[submodule "src/optpp"]
+	path = src/optpp
+	url = https://github.com/OpenCMISS-Dependencies/optpp.git
