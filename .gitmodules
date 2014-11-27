@@ -79,3 +79,6 @@
 [submodule "src/glew"]
 	path = src/glew
 	url = https://github.com/OpenCMISS-Dependencies/glew.git
+[submodule "src/gdcm"]
+	path = src/gdcm
+	url = https://github.com/OpenCMISS-Dependencies/gdcm.git
