@@ -49,3 +49,6 @@
 [submodule "src/zlib"]
 	path = src/zlib
 	url = https://github.com/OpenCMISS-Dependencies/zlib.git
+[submodule "src/wxWidgets"]
+	path = src/wxWidgets
+	url = https://github.com/OpenCMISS-Dependencies/wxWidgets.git
