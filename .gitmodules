@@ -91,3 +91,6 @@
 [submodule "src/bzip2"]
 	path = src/bzip2
 	url = https://github.com/OpenCMISS-Dependencies/bzip2.git
+[submodule "src/ImageMagick"]
+	path = src/ImageMagick
+	url = https://github.com/OpenCMISS-Dependencies/ImageMagick.git
