@@ -88,3 +88,6 @@
 [submodule "src/freetype2"]
 	path = src/freetype2
 	url = https://github.com/OpenCMISS-Dependencies/freetype2.git
+[submodule "src/bzip2"]
+	path = src/bzip2
+	url = https://github.com/OpenCMISS-Dependencies/bzip2.git
