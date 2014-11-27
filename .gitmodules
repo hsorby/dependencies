@@ -46,3 +46,6 @@
 [submodule "hdf5"]
 	path = src/hdf5
 	url = https://github.com/OpenCMISS-Dependencies/hdf5.git
+[submodule "src/zlib"]
+	path = src/zlib
+	url = https://github.com/OpenCMISS-Dependencies/zlib.git
