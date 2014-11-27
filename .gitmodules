@@ -76,3 +76,6 @@
 [submodule "src/itk"]
 	path = src/itk
 	url = https://github.com/OpenCMISS-Dependencies/itk.git
+[submodule "src/glew"]
+	path = src/glew
+	url = https://github.com/OpenCMISS-Dependencies/glew.git
