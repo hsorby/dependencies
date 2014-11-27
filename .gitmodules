@@ -52,3 +52,6 @@
 [submodule "src/wxWidgets"]
 	path = src/wxWidgets
 	url = https://github.com/OpenCMISS-Dependencies/wxWidgets.git
+[submodule "src/tiff"]
+	path = src/tiff
+	url = https://github.com/OpenCMISS-Dependencies/tiff.git
